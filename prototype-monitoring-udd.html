@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<!--
+    PROTOTYPE — NOT FOR PRODUCTION
+    Halaman Monitoring Unit Dose Dispensing (UDD)
+    Lampiran Redmine Ticket untuk Developer
+    Dibuat: 26 April 2026
+
+    Flow: index.html (cari & pilih pasien) → halaman ini?patientId=X
+    Fitur:
+    - Menerima parameter ?patientId=X dari halaman pencarian
+    - Panel tanggal perawatan (kiri) + tabel obat & BHP (kanan)
+    - Cetak CPOR format matriks landscape
+-->
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring UDD — Prototype</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
+
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; font-size: 13px; }
+        body { background: #f0f2f5; font-family: Arial, sans-serif; }
+        .main-container { padding: 15px 20px; }
+
+        /* Panel headers */
+        .panel-info > .panel-heading    { background: #d9edf7; border-color: #bce8f1; color: #31708f; }
+        .panel-primary > .panel-heading { background: #337ab7; border-color: #2e6da4; color: #fff; }
+        .panel-success > .panel-heading { background: #dff0d8; border-color: #d6e9c6; color: #3c763d; }
+        .panel-warning > .panel-heading { background: #fcf8e3; border-color: #faebcc; color: #8a6d3b; }
+        .panel-heading strong { font-size: 14px; }
+        .label-date { margin-left: 10px; font-size: 12px; }
+
+        /* ===== Tabel Tanggal ===== */
+        #tabel-tanggal { margin-bottom: 0; }
+        #tabel-tanggal th { background: #f5f5f5; font-size: 12px; text-align: center; }
+        #tabel-tanggal td { font-size: 13px; vertical-align: middle; }
+        #tabel-tanggal tbody tr { cursor: pointer; }
+        #tabel-tanggal tbody tr.active { background-color: #d9edf7 !important; }
+        #tabel-tanggal tbody tr:hover { background-color: #f5f5f5; }
+        #tabel-tanggal tbody tr.active:hover { background-color: #c4e3f3 !important; }
+        .btn-detail { padding: 2px 10px; font-size: 12px; }
+
+        /* ===== Tabel Data Obat/BHP ===== */
+        #tabel-obat_wrapper, #tabel-bhp_wrapper { font-size: 12px; }
+        #tabel-obat th, #tabel-bhp th { font-size: 12px; background: #f9f9f9; }
+        #tabel-obat td, #tabel-bhp td { font-size: 13px; vertical-align: middle; }
+
+        /* Patient info */
+        .info-row { margin-bottom: 6px; }
+        .info-label { color: #555; }
+        .info-value { font-weight: bold; color: #333; }
+        .patient-badge { font-size: 13px; margin-left: 10px; }
+
+        /* Cetak button */
+        .btn-cetak-container { margin-top: 15px; padding: 10px 0; border-top: 2px solid #ddd; }
+        .btn-cetak { padding: 10px 30px; font-size: 15px; font-weight: bold; letter-spacing: 0.5px; }
+
+        .section-divider { border-top: 3px solid #337ab7; margin: 15px 0 10px 0; }
+
+        @media (max-width: 992px) {
+            .col-md-3, .col-md-9, .col-md-6, .col-md-2 { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <!-- ================================================================ -->
+    <!-- HEADER                                                           -->
+    <!-- ================================================================ -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4 style="margin-top:0;"><i class="fa fa-heartbeat"></i> Monitoring Unit Dose Dispensing (UDD) — Rawat Inap</h4>
+        </div>
+        <div class="col-md-6 text-right">
+            <a href="index.html" class="btn btn-default btn-sm" style="margin-top:5px;">
+                <i class="fa fa-arrow-left"></i> Kembali ke Daftar Pasien
+            </a>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- ================================================================ -->
+    <!-- INFO PASIEN TERPILIH                                             -->
+    <!-- ================================================================ -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <strong><i class="fa fa-user"></i> Detail Pasien Terpilih</strong>
+                    <span class="badge patient-badge" id="selected-patient-name">RAHMAWATI</span>
+                </div>
+                <div class="panel-body" id="panel-info-pasien">
+                    <!-- Diisi via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- LAYOUT 3 PANEL: KIRI (TANGGAL) | KANAN (OBAT + BHP)             -->
+    <!-- ================================================================ -->
+    <div class="row">
+        <!-- Panel Kiri — Tanggal -->
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong><i class="fa fa-calendar"></i> Tanggal Perawatan</strong>
+                </div>
+                <div class="panel-body" style="padding: 0;">
+                    <table class="table table-hover" id="tabel-tanggal">
+                        <thead>
+                            <tr><th style="width:55px;">Aksi</th><th>Tanggal</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Kanan — Obat + BHP -->
+        <div class="col-md-9">
+            <!-- Tabel Obat -->
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <strong><i class="fa fa-medkit"></i> Data Resep Obat</strong>
+                    <span class="label label-info pull-right label-date" id="label-tanggal-obat"></span>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped" id="tabel-obat" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th style="width:30px;">No</th><th>No. Resep</th><th>Nama Obat</th>
+                                <th style="width:50px;">Qty</th><th style="width:60px;">Return</th>
+                                <th style="width:90px;">Status</th><th style="width:100px;">Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tabel BHP -->
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <strong><i class="fa fa-stethoscope"></i> Data BHP / Alkes</strong>
+                    <span class="label label-info pull-right label-date" id="label-tanggal-bhp"></span>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped" id="tabel-bhp" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th style="width:30px;">No</th><th>No. Resep</th><th>Nama BHP / Alkes</th>
+                                <th style="width:50px;">Qty</th><th style="width:60px;">Return</th>
+                                <th style="width:90px;">Status</th><th style="width:100px;">Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TOMBOL CETAK                                                    -->
+    <!-- ================================================================ -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="btn-cetak-container text-right">
+                <button class="btn btn-danger btn-lg btn-cetak" onclick="cetakCPOR()">
+                    <i class="fa fa-print"></i> Cetak CPOR (Catatan Pemberian Obat Rawat)
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /main-container -->
+
+<!-- ================================================================ -->
+<!-- SCRIPTS                                                          -->
+<!-- ================================================================ -->
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.id.min.js"></script>
+
+<script>
+// ======================================================================
+// DATABASE PASIEN (12 pasien, data realistis)
+// ======================================================================
+var patientDB = [
+    {
+        id: 1, rm: '00042066', nama: 'RAHMAWATI', jk: 'Perempuan',
+        ruangan: 'Rawat Inap Jantung', kelas: 'VIP',
+        tglMasuk: '11/03/2026', tglKeluar: '-',
+        diagnosa: 'Dyspepsia, Hypertension',
+        dokter: 'dr. Budi Santoso, Sp.PD',
+        status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0001',
+        statusBayar: 'BPJS',
+        dates: ['2026-03-11','2026-03-12','2026-03-13','2026-03-14'],
+        data: {
+            '2026-03-11': {
+                obat: [{no:1,resep:'R-001',nama:'Ketorolac Inj 30',qty:3,ret:0,status:'Diberikan',harga:'15.000'},{no:2,resep:'R-002',nama:'Omeprazole Inj 40 mg',qty:1,ret:0,status:'Diberikan',harga:'18.500'},{no:3,resep:'R-003',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:4,resep:'R-005',nama:'Ranitidine Inj 50 mg',qty:2,ret:0,status:'Diberikan',harga:'12.000'}],
+                bhp:  [{no:1,resep:'B-001',nama:'Spuit 10 mL',qty:1,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-002',nama:'Infuset Dewasa',qty:1,ret:0,status:'Digunakan',harga:'12.500'},{no:3,resep:'B-003',nama:'IV Catheter 20G',qty:1,ret:0,status:'Digunakan',harga:'14.000'}]
+            },
+            '2026-03-12': {
+                obat: [{no:1,resep:'R-001',nama:'Ketorolac Inj 30',qty:2,ret:0,status:'Diberikan',harga:'15.000'},{no:2,resep:'R-002',nama:'Omeprazole Inj 40 mg',qty:1,ret:0,status:'Diberikan',harga:'18.500'},{no:3,resep:'R-003',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:4,resep:'R-006',nama:'Furosemide Inj 20 mg',qty:1,ret:0,status:'Diberikan',harga:'8.500'}],
+                bhp:  [{no:1,resep:'B-001',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-005',nama:'Kassa Steril',qty:4,ret:0,status:'Digunakan',harga:'1.500'},{no:3,resep:'B-006',nama:'Alkohol Swab',qty:3,ret:0,status:'Digunakan',harga:'500'}]
+            },
+            '2026-03-13': {
+                obat: [{no:1,resep:'R-001',nama:'Ketorolac Inj 30',qty:3,ret:0,status:'Diberikan',harga:'15.000'},{no:2,resep:'R-002',nama:'Omeprazole Inj 40 mg',qty:1,ret:0,status:'Diberikan',harga:'18.500'},{no:3,resep:'R-003',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:4,resep:'R-007',nama:'Paracetamol Infus 1 gr',qty:3,ret:0,status:'Diberikan',harga:'11.000'}],
+                bhp:  [{no:1,resep:'B-001',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-007',nama:'Handscoen Steril',qty:2,ret:0,status:'Digunakan',harga:'3.500'}]
+            },
+            '2026-03-14': {
+                obat: [{no:1,resep:'R-001',nama:'Ketorolac Inj 30',qty:1,ret:0,status:'Diberikan',harga:'15.000'},{no:2,resep:'R-002',nama:'Omeprazole Inj 40 mg',qty:1,ret:0,status:'Diberikan',harga:'18.500'},{no:3,resep:'R-003',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:4,resep:'R-008',nama:'Ondansetron Inj 4 mg',qty:2,ret:1,status:'Diberikan',harga:'14.000'}],
+                bhp:  [{no:1,resep:'B-001',nama:'Spuit 10 mL',qty:1,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-008',nama:'Plester 2 cm',qty:1,ret:0,status:'Digunakan',harga:'1.000'}]
+            }
+        }
+    },
+    {
+        id: 2, rm: '00042067', nama: 'AHMAD SYAIFUL', jk: 'Laki-laki',
+        ruangan: 'Rawat Inap Bedah', kelas: 'Kelas I',
+        tglMasuk: '24/03/2026', tglKeluar: '28/03/2026',
+        diagnosa: 'Appendicitis Akut',
+        dokter: 'dr. Dewi Lestari, Sp.B',
+        status: 'Sudah Pulang', penjamin: 'UMUM', noReg: 'REG-2026-0015',
+        statusBayar: 'Lunas',
+        dates: ['2026-03-24','2026-03-25','2026-03-26','2026-03-27','2026-03-28'],
+        data: {
+            '2026-03-24': {
+                obat: [{no:1,resep:'R-010',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:2,resep:'R-011',nama:'Metronidazole Infus 500 mg',qty:2,ret:0,status:'Diberikan',harga:'16.000'},{no:3,resep:'R-012',nama:'Ketorolac Inj 30',qty:2,ret:0,status:'Diberikan',harga:'15.000'}],
+                bhp:  [{no:1,resep:'B-010',nama:'Spuit 10 mL',qty:3,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-011',nama:'Infuset Dewasa',qty:1,ret:0,status:'Digunakan',harga:'12.500'},{no:3,resep:'B-012',nama:'Handscoen Steril 7.5',qty:2,ret:0,status:'Digunakan',harga:'3.500'}]
+            },
+            '2026-03-25': {
+                obat: [{no:1,resep:'R-010',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:2,resep:'R-011',nama:'Metronidazole Infus 500 mg',qty:2,ret:0,status:'Diberikan',harga:'16.000'},{no:3,resep:'R-013',nama:'Tramadol Inj 100 mg',qty:2,ret:0,status:'Diberikan',harga:'25.000'}],
+                bhp:  [{no:1,resep:'B-010',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-013',nama:'Kassa Steril',qty:5,ret:0,status:'Digunakan',harga:'1.500'},{no:3,resep:'B-014',nama:'Plester Hypafix',qty:1,ret:0,status:'Digunakan',harga:'5.000'}]
+            },
+            '2026-03-26': {
+                obat: [{no:1,resep:'R-010',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:2,resep:'R-011',nama:'Metronidazole Infus 500 mg',qty:2,ret:0,status:'Diberikan',harga:'16.000'},{no:3,resep:'R-014',nama:'Ranitidine Inj 50 mg',qty:2,ret:0,status:'Diberikan',harga:'12.000'}],
+                bhp:  [{no:1,resep:'B-010',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-013',nama:'Kassa Steril',qty:3,ret:0,status:'Digunakan',harga:'1.500'}]
+            },
+            '2026-03-27': {
+                obat: [{no:1,resep:'R-010',nama:'Ceftriaxone Inj 1 gr',qty:1,ret:0,status:'Diberikan',harga:'22.000'},{no:2,resep:'R-015',nama:'Paracetamol Infus 1 gr',qty:3,ret:0,status:'Diberikan',harga:'11.000'}],
+                bhp:  [{no:1,resep:'B-010',nama:'Spuit 10 mL',qty:1,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-015',nama:'Alkohol Swab',qty:2,ret:0,status:'Digunakan',harga:'500'}]
+            },
+            '2026-03-28': {
+                obat: [{no:1,resep:'R-016',nama:'Ciprofloxacin Tab 500 mg',qty:2,ret:0,status:'Diberikan',harga:'3.500'},{no:2,resep:'R-017',nama:'Asam Mefenamat Tab 500 mg',qty:3,ret:0,status:'Diberikan',harga:'1.200'}],
+                bhp:  []
+            }
+        }
+    },
+    {
+        id: 3, rm: '00042068', nama: 'SITI AMINAH', jk: 'Perempuan',
+        ruangan: 'Rawat Inap Anak', kelas: 'Kelas II',
+        tglMasuk: '01/04/2026', tglKeluar: '-',
+        diagnosa: 'DHF Grade II',
+        dokter: 'dr. Ratna Dewi, Sp.A',
+        status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0024',
+        statusBayar: 'BPJS',
+        dates: ['2026-04-01','2026-04-02','2026-04-03','2026-04-04','2026-04-05'],
+        data: {
+            '2026-04-01': {
+                obat: [{no:1,resep:'R-020',nama:'Paracetamol Infus 500 mg',qty:3,ret:0,status:'Diberikan',harga:'8.000'},{no:2,resep:'R-021',nama:'Ondansetron Inj 2 mg',qty:2,ret:0,status:'Diberikan',harga:'12.000'},{no:3,resep:'R-022',nama:'RL Infus 500 mL',qty:2,ret:0,status:'Diberikan',harga:'14.000'}],
+                bhp:  [{no:1,resep:'B-020',nama:'Spuit 5 mL',qty:3,ret:0,status:'Digunakan',harga:'2.000'},{no:2,resep:'B-021',nama:'Infuset Anak',qty:1,ret:0,status:'Digunakan',harga:'11.000'},{no:3,resep:'B-022',nama:'IV Catheter 24G',qty:1,ret:0,status:'Digunakan',harga:'13.000'}]
+            },
+            '2026-04-02': {
+                obat: [{no:1,resep:'R-020',nama:'Paracetamol Infus 500 mg',qty:3,ret:0,status:'Diberikan',harga:'8.000'},{no:2,resep:'R-021',nama:'Ondansetron Inj 2 mg',qty:2,ret:0,status:'Diberikan',harga:'12.000'},{no:3,resep:'R-022',nama:'RL Infus 500 mL',qty:1,ret:0,status:'Diberikan',harga:'14.000'},{no:4,resep:'R-023',nama:'Vitamin C Inj 500 mg',qty:1,ret:0,status:'Diberikan',harga:'7.500'}],
+                bhp:  [{no:1,resep:'B-020',nama:'Spuit 5 mL',qty:3,ret:0,status:'Digunakan',harga:'2.000'},{no:2,resep:'B-023',nama:'Handscoen Steril S',qty:1,ret:0,status:'Digunakan',harga:'3.500'}]
+            },
+            '2026-04-03': {
+                obat: [{no:1,resep:'R-020',nama:'Paracetamol Infus 500 mg',qty:2,ret:0,status:'Diberikan',harga:'8.000'},{no:2,resep:'R-021',nama:'Ondansetron Inj 2 mg',qty:2,ret:0,status:'Diberikan',harga:'12.000'},{no:3,resep:'R-022',nama:'RL Infus 500 mL',qty:1,ret:0,status:'Diberikan',harga:'14.000'}],
+                bhp:  [{no:1,resep:'B-020',nama:'Spuit 5 mL',qty:2,ret:0,status:'Digunakan',harga:'2.000'},{no:2,resep:'B-024',nama:'Alkohol Swab',qty:4,ret:0,status:'Digunakan',harga:'500'}]
+            },
+            '2026-04-04': {
+                obat: [{no:1,resep:'R-020',nama:'Paracetamol Infus 500 mg',qty:2,ret:0,status:'Diberikan',harga:'8.000'},{no:2,resep:'R-024',nama:'Zinc Syrup 20 mg',qty:1,ret:0,status:'Diberikan',harga:'9.000'}],
+                bhp:  [{no:1,resep:'B-020',nama:'Spuit 5 mL',qty:1,ret:0,status:'Digunakan',harga:'2.000'}]
+            },
+            '2026-04-05': {
+                obat: [{no:1,resep:'R-020',nama:'Paracetamol Infus 500 mg',qty:1,ret:0,status:'Diberikan',harga:'8.000'}],
+                bhp:  [{no:1,resep:'B-020',nama:'Spuit 5 mL',qty:1,ret:0,status:'Digunakan',harga:'2.000'}]
+            }
+        }
+    },
+    {
+        id: 4, rm: '00042069', nama: 'BUDI PRASETYO', jk: 'Laki-laki',
+        ruangan: 'Rawat Inap Penyakit Dalam', kelas: 'Kelas III',
+        tglMasuk: '05/04/2026', tglKeluar: '-',
+        diagnosa: 'Diabetes Melitus Tipe 2, Neuropati Perifer',
+        dokter: 'dr. Hendra Wijaya, Sp.PD',
+        status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0031',
+        statusBayar: 'BPJS',
+        dates: ['2026-04-05','2026-04-06','2026-04-07'],
+        data: {
+            '2026-04-05': {
+                obat: [{no:1,resep:'R-030',nama:'Insulin Novorapid Inj 100 IU',qty:3,ret:0,status:'Diberikan',harga:'45.000'},{no:2,resep:'R-031',nama:'Gabapentin Cap 300 mg',qty:3,ret:0,status:'Diberikan',harga:'6.500'},{no:3,resep:'R-032',nama:'Metformin Tab 500 mg',qty:2,ret:0,status:'Diberikan',harga:'800'}],
+                bhp:  [{no:1,resep:'B-030',nama:'Spuit Insulin 1 mL',qty:3,ret:0,status:'Digunakan',harga:'3.000'},{no:2,resep:'B-031',nama:'Lancet Pen',qty:3,ret:0,status:'Digunakan',harga:'1.500'},{no:3,resep:'B-032',nama:'Alkohol Swab',qty:6,ret:0,status:'Digunakan',harga:'500'}]
+            },
+            '2026-04-06': {
+                obat: [{no:1,resep:'R-030',nama:'Insulin Novorapid Inj 100 IU',qty:3,ret:0,status:'Diberikan',harga:'45.000'},{no:2,resep:'R-031',nama:'Gabapentin Cap 300 mg',qty:3,ret:0,status:'Diberikan',harga:'6.500'},{no:3,resep:'R-033',nama:'Glimepiride Tab 2 mg',qty:1,ret:0,status:'Diberikan',harga:'1.500'}],
+                bhp:  [{no:1,resep:'B-030',nama:'Spuit Insulin 1 mL',qty:3,ret:0,status:'Digunakan',harga:'3.000'},{no:2,resep:'B-031',nama:'Lancet Pen',qty:2,ret:0,status:'Digunakan',harga:'1.500'},{no:3,resep:'B-032',nama:'Alkohol Swab',qty:4,ret:0,status:'Digunakan',harga:'500'}]
+            },
+            '2026-04-07': {
+                obat: [{no:1,resep:'R-030',nama:'Insulin Novorapid Inj 100 IU',qty:3,ret:0,status:'Diberikan',harga:'45.000'},{no:2,resep:'R-031',nama:'Gabapentin Cap 300 mg',qty:3,ret:0,status:'Diberikan',harga:'6.500'}],
+                bhp:  [{no:1,resep:'B-030',nama:'Spuit Insulin 1 mL',qty:3,ret:0,status:'Digunakan',harga:'3.000'},{no:2,resep:'B-032',nama:'Alkohol Swab',qty:4,ret:0,status:'Digunakan',harga:'500'}]
+            }
+        }
+    },
+    {
+        id: 5, rm: '00042070', nama: 'RINA WULANDARI', jk: 'Perempuan',
+        ruangan: 'Rawat Inap Jantung', kelas: 'VIP',
+        tglMasuk: '10/04/2026', tglKeluar: '-',
+        diagnosa: 'CHF, Cardiomyopathy',
+        dokter: 'dr. Budi Santoso, Sp.PD<br>dr. Anton Hermawan, Sp.JP',
+        status: 'Masih Dirawat', penjamin: 'UMUM', noReg: 'REG-2026-0042',
+        statusBayar: 'Belum Lunas',
+        dates: ['2026-04-10','2026-04-11','2026-04-12'],
+        data: {
+            '2026-04-10': {
+                obat: [{no:1,resep:'R-040',nama:'Furosemide Inj 40 mg',qty:2,ret:0,status:'Diberikan',harga:'8.500'},{no:2,resep:'R-041',nama:'Captopril Tab 25 mg',qty:3,ret:0,status:'Diberikan',harga:'600'},{no:3,resep:'R-042',nama:'Bisoprolol Tab 5 mg',qty:1,ret:0,status:'Diberikan',harga:'4.500'},{no:4,resep:'R-043',nama:'ISDN Tab 5 mg',qty:3,ret:0,status:'Diberikan',harga:'1.200'}],
+                bhp:  [{no:1,resep:'B-040',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-041',nama:'Oksigen Nasal Cannula',qty:1,ret:0,status:'Digunakan',harga:'25.000'}]
+            },
+            '2026-04-11': {
+                obat: [{no:1,resep:'R-040',nama:'Furosemide Inj 40 mg',qty:2,ret:0,status:'Diberikan',harga:'8.500'},{no:2,resep:'R-041',nama:'Captopril Tab 25 mg',qty:3,ret:0,status:'Diberikan',harga:'600'},{no:3,resep:'R-042',nama:'Bisoprolol Tab 5 mg',qty:1,ret:0,status:'Diberikan',harga:'4.500'},{no:4,resep:'R-043',nama:'ISDN Tab 5 mg',qty:3,ret:0,status:'Diberikan',harga:'1.200'}],
+                bhp:  [{no:1,resep:'B-040',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'}]
+            },
+            '2026-04-12': {
+                obat: [{no:1,resep:'R-040',nama:'Furosemide Inj 40 mg',qty:1,ret:0,status:'Diberikan',harga:'8.500'},{no:2,resep:'R-041',nama:'Captopril Tab 25 mg',qty:3,ret:0,status:'Diberikan',harga:'600'},{no:3,resep:'R-042',nama:'Bisoprolol Tab 5 mg',qty:1,ret:0,status:'Diberikan',harga:'4.500'}],
+                bhp:  [{no:1,resep:'B-040',nama:'Spuit 10 mL',qty:1,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-042',nama:'Tensimeter Digital',qty:1,ret:0,status:'Digunakan',harga:'0'}]
+            }
+        }
+    },
+    {
+        id: 6, rm: '00042071', nama: 'DEDI KUSNADI', jk: 'Laki-laki',
+        ruangan: 'Rawat Inap Bedah', kelas: 'Kelas I',
+        tglMasuk: '15/04/2026', tglKeluar: '-',
+        diagnosa: 'Fraktur Femur Sinistra Tertutup',
+        dokter: 'dr. Dewi Lestari, Sp.B<br>dr. Rudi Hartono, Sp.OT',
+        status: 'Masih Dirawat', penjamin: 'BPJS Ketenagakerjaan', noReg: 'REG-2026-0051',
+        statusBayar: 'BPJS',
+        dates: ['2026-04-15','2026-04-16','2026-04-17'],
+        data: {
+            '2026-04-15': {
+                obat: [{no:1,resep:'R-050',nama:'Ketorolac Inj 30',qty:3,ret:0,status:'Diberikan',harga:'15.000'},{no:2,resep:'R-051',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:3,resep:'R-052',nama:'Tramadol Inj 100 mg',qty:2,ret:0,status:'Diberikan',harga:'25.000'},{no:4,resep:'R-053',nama:'Ranitidine Inj 50 mg',qty:2,ret:0,status:'Diberikan',harga:'12.000'}],
+                bhp:  [{no:1,resep:'B-050',nama:'Spuit 10 mL',qty:4,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-051',nama:'Infuset Dewasa',qty:1,ret:0,status:'Digunakan',harga:'12.500'},{no:3,resep:'B-052',nama:'Kassa Steril Gulung',qty:3,ret:0,status:'Digunakan',harga:'4.500'},{no:4,resep:'B-053',nama:'Plester Hypafix 10 cm',qty:1,ret:0,status:'Digunakan',harga:'8.000'}]
+            },
+            '2026-04-16': {
+                obat: [{no:1,resep:'R-050',nama:'Ketorolac Inj 30',qty:2,ret:0,status:'Diberikan',harga:'15.000'},{no:2,resep:'R-051',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:3,resep:'R-054',nama:'Calcium Lactate Tab 500 mg',qty:3,ret:0,status:'Diberikan',harga:'1.800'}],
+                bhp:  [{no:1,resep:'B-050',nama:'Spuit 10 mL',qty:3,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-052',nama:'Kassa Steril Gulung',qty:2,ret:0,status:'Digunakan',harga:'4.500'},{no:3,resep:'B-054',nama:'Elastic Bandage 10 cm',qty:1,ret:0,status:'Digunakan',harga:'18.000'}]
+            },
+            '2026-04-17': {
+                obat: [{no:1,resep:'R-050',nama:'Ketorolac Inj 30',qty:2,ret:0,status:'Diberikan',harga:'15.000'},{no:2,resep:'R-051',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:3,resep:'R-054',nama:'Calcium Lactate Tab 500 mg',qty:3,ret:0,status:'Diberikan',harga:'1.800'}],
+                bhp:  [{no:1,resep:'B-050',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-052',nama:'Kassa Steril Gulung',qty:1,ret:0,status:'Digunakan',harga:'4.500'}]
+            }
+        }
+    },
+    {
+        id: 7, rm: '00042072', nama: 'NUR HASANAH', jk: 'Perempuan',
+        ruangan: 'Rawat Inap Kebidanan', kelas: 'VIP',
+        tglMasuk: '18/04/2026', tglKeluar: '22/04/2026',
+        diagnosa: 'Post Sectio Caesarea, P2A0',
+        dokter: 'dr. Siti Fatimah, Sp.OG',
+        status: 'Sudah Pulang', penjamin: 'BPJS', noReg: 'REG-2026-0063',
+        statusBayar: 'BPJS',
+        dates: ['2026-04-18','2026-04-19','2026-04-20','2026-04-21','2026-04-22'],
+        data: {
+            '2026-04-18': {
+                obat: [{no:1,resep:'R-060',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:2,resep:'R-061',nama:'Ketorolac Inj 30',qty:2,ret:0,status:'Diberikan',harga:'15.000'},{no:3,resep:'R-062',nama:'Oxytocin Inj 10 IU',qty:2,ret:0,status:'Diberikan',harga:'9.500'},{no:4,resep:'R-063',nama:'Asam Tranexamat Inj 500 mg',qty:2,ret:0,status:'Diberikan',harga:'12.500'}],
+                bhp:  [{no:1,resep:'B-060',nama:'Spuit 10 mL',qty:4,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-061',nama:'Infuset Dewasa',qty:1,ret:0,status:'Digunakan',harga:'12.500'},{no:3,resep:'B-062',nama:'Underpad',qty:3,ret:0,status:'Digunakan',harga:'5.000'},{no:4,resep:'B-063',nama:'Kateter Urine 16F',qty:1,ret:0,status:'Digunakan',harga:'17.000'}]
+            },
+            '2026-04-19': {
+                obat: [{no:1,resep:'R-060',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:2,resep:'R-061',nama:'Ketorolac Inj 30',qty:2,ret:0,status:'Diberikan',harga:'15.000'},{no:3,resep:'R-063',nama:'Asam Tranexamat Inj 500 mg',qty:2,ret:0,status:'Diberikan',harga:'12.500'},{no:4,resep:'R-064',nama:'Paracetamol Infus 1 gr',qty:3,ret:0,status:'Diberikan',harga:'11.000'}],
+                bhp:  [{no:1,resep:'B-060',nama:'Spuit 10 mL',qty:3,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-062',nama:'Underpad',qty:2,ret:0,status:'Digunakan',harga:'5.000'},{no:3,resep:'B-064',nama:'Handscoen Steril',qty:2,ret:0,status:'Digunakan',harga:'3.500'}]
+            },
+            '2026-04-20': {
+                obat: [{no:1,resep:'R-060',nama:'Ceftriaxone Inj 1 gr',qty:1,ret:0,status:'Diberikan',harga:'22.000'},{no:2,resep:'R-061',nama:'Ketorolac Inj 30',qty:1,ret:0,status:'Diberikan',harga:'15.000'},{no:3,resep:'R-065',nama:'SF Tab 500 mg',qty:1,ret:0,status:'Diberikan',harga:'3.200'}],
+                bhp:  [{no:1,resep:'B-060',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-062',nama:'Underpad',qty:1,ret:0,status:'Digunakan',harga:'5.000'}]
+            }
+        }
+    },
+    {
+        id: 8, rm: '00042073', nama: 'AGUS RIYANTO', jk: 'Laki-laki',
+        ruangan: 'Rawat Inap Saraf', kelas: 'Kelas II',
+        tglMasuk: '20/04/2026', tglKeluar: '-',
+        diagnosa: 'Stroke Non-Hemorrhagic, Hemiparesis Dextra',
+        dokter: 'dr. Indra Gunawan, Sp.S',
+        status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0078',
+        statusBayar: 'BPJS',
+        dates: ['2026-04-20','2026-04-21','2026-04-22'],
+        data: {
+            '2026-04-20': {
+                obat: [{no:1,resep:'R-070',nama:'Citicoline Inj 500 mg',qty:2,ret:0,status:'Diberikan',harga:'35.000'},{no:2,resep:'R-071',nama:'Amlodipine Tab 10 mg',qty:1,ret:0,status:'Diberikan',harga:'2.500'},{no:3,resep:'R-072',nama:'Clopidogrel Tab 75 mg',qty:1,ret:0,status:'Diberikan',harga:'7.500'},{no:4,resep:'R-073',nama:'Atorvastatin Tab 20 mg',qty:1,ret:0,status:'Diberikan',harga:'5.000'}],
+                bhp:  [{no:1,resep:'B-070',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-071',nama:'Infuset Dewasa',qty:1,ret:0,status:'Digunakan',harga:'12.500'},{no:3,resep:'B-072',nama:'Oksigen Nasal Cannula',qty:1,ret:0,status:'Digunakan',harga:'25.000'}]
+            },
+            '2026-04-21': {
+                obat: [{no:1,resep:'R-070',nama:'Citicoline Inj 500 mg',qty:2,ret:0,status:'Diberikan',harga:'35.000'},{no:2,resep:'R-071',nama:'Amlodipine Tab 10 mg',qty:1,ret:0,status:'Diberikan',harga:'2.500'},{no:3,resep:'R-072',nama:'Clopidogrel Tab 75 mg',qty:1,ret:0,status:'Diberikan',harga:'7.500'},{no:4,resep:'R-073',nama:'Atorvastatin Tab 20 mg',qty:1,ret:0,status:'Diberikan',harga:'5.000'}],
+                bhp:  [{no:1,resep:'B-070',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'}]
+            },
+            '2026-04-22': {
+                obat: [{no:1,resep:'R-070',nama:'Citicoline Inj 500 mg',qty:2,ret:0,status:'Diberikan',harga:'35.000'},{no:2,resep:'R-071',nama:'Amlodipine Tab 10 mg',qty:1,ret:0,status:'Diberikan',harga:'2.500'},{no:3,resep:'R-072',nama:'Clopidogrel Tab 75 mg',qty:1,ret:0,status:'Diberikan',harga:'7.500'},{no:4,resep:'R-074',nama:'Piracetam Infus 3 gr',qty:1,ret:0,status:'Diberikan',harga:'18.000'}],
+                bhp:  [{no:1,resep:'B-070',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'}]
+            }
+        }
+    },
+    {
+        id: 9, rm: '00042074', nama: 'FITRI HANDAYANI', jk: 'Perempuan',
+        ruangan: 'Rawat Inap Paru', kelas: 'Kelas III',
+        tglMasuk: '12/04/2026', tglKeluar: '-',
+        diagnosa: 'Pneumonia Komunitas, TB Paru Suspek',
+        dokter: 'dr. Ahmad Fauzi, Sp.P',
+        status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0085',
+        statusBayar: 'BPJS',
+        dates: ['2026-04-12','2026-04-13','2026-04-14'],
+        data: {
+            '2026-04-12': {
+                obat: [{no:1,resep:'R-080',nama:'Levofloxacin Infus 500 mg',qty:1,ret:0,status:'Diberikan',harga:'28.000'},{no:2,resep:'R-081',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:3,resep:'R-082',nama:'Paracetamol Infus 1 gr',qty:3,ret:0,status:'Diberikan',harga:'11.000'},{no:4,resep:'R-083',nama:'Codein Tab 10 mg',qty:3,ret:0,status:'Diberikan',harga:'4.500'}],
+                bhp:  [{no:1,resep:'B-080',nama:'Spuit 10 mL',qty:3,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-081',nama:'Infuset Dewasa',qty:1,ret:0,status:'Digunakan',harga:'12.500'},{no:3,resep:'B-082',nama:'Oksigen Masker',qty:1,ret:0,status:'Digunakan',harga:'30.000'},{no:4,resep:'B-083',nama:'Nebulizer Kit',qty:1,ret:0,status:'Digunakan',harga:'15.000'}]
+            },
+            '2026-04-13': {
+                obat: [{no:1,resep:'R-080',nama:'Levofloxacin Infus 500 mg',qty:1,ret:0,status:'Diberikan',harga:'28.000'},{no:2,resep:'R-081',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:3,resep:'R-082',nama:'Paracetamol Infus 1 gr',qty:2,ret:0,status:'Diberikan',harga:'11.000'},{no:4,resep:'R-084',nama:'Ventolin Nebules 2.5 mg',qty:2,ret:0,status:'Diberikan',harga:'6.500'}],
+                bhp:  [{no:1,resep:'B-080',nama:'Spuit 10 mL',qty:3,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-082',nama:'Oksigen Masker',qty:1,ret:0,status:'Digunakan',harga:'30.000'},{no:3,resep:'B-083',nama:'Nebulizer Kit',qty:1,ret:0,status:'Digunakan',harga:'15.000'}]
+            },
+            '2026-04-14': {
+                obat: [{no:1,resep:'R-080',nama:'Levofloxacin Infus 500 mg',qty:1,ret:0,status:'Diberikan',harga:'28.000'},{no:2,resep:'R-081',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:3,resep:'R-083',nama:'Codein Tab 10 mg',qty:2,ret:0,status:'Diberikan',harga:'4.500'},{no:4,resep:'R-084',nama:'Ventolin Nebules 2.5 mg',qty:2,ret:0,status:'Diberikan',harga:'6.500'}],
+                bhp:  [{no:1,resep:'B-080',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-083',nama:'Nebulizer Kit',qty:1,ret:0,status:'Digunakan',harga:'15.000'}]
+            }
+        }
+    },
+    {
+        id: 10, rm: '00042075', nama: 'HENDRA GUNAWAN', jk: 'Laki-laki',
+        ruangan: 'Rawat Inap Penyakit Dalam', kelas: 'Kelas I',
+        tglMasuk: '08/04/2026', tglKeluar: '-',
+        diagnosa: 'CKD Stage IV, Anemia, Hipertensi',
+        dokter: 'dr. Hendra Wijaya, Sp.PD<br>dr. Maya Sari, Sp.GK',
+        status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0092',
+        statusBayar: 'BPJS',
+        dates: ['2026-04-08','2026-04-09','2026-04-10'],
+        data: {
+            '2026-04-08': {
+                obat: [{no:1,resep:'R-090',nama:'Furosemide Inj 40 mg',qty:2,ret:0,status:'Diberikan',harga:'8.500'},{no:2,resep:'R-091',nama:'Amlodipine Tab 10 mg',qty:1,ret:0,status:'Diberikan',harga:'2.500'},{no:3,resep:'R-092',nama:'Epoetin Alfa Inj 4000 IU',qty:1,ret:0,status:'Diberikan',harga:'125.000'},{no:4,resep:'R-093',nama:'SF Tab 500 mg',qty:2,ret:0,status:'Diberikan',harga:'3.200'}],
+                bhp:  [{no:1,resep:'B-090',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-091',nama:'Infuset Dewasa',qty:1,ret:0,status:'Digunakan',harga:'12.500'},{no:3,resep:'B-092',nama:'Urine Bag',qty:1,ret:0,status:'Digunakan',harga:'15.000'}]
+            },
+            '2026-04-09': {
+                obat: [{no:1,resep:'R-090',nama:'Furosemide Inj 40 mg',qty:2,ret:0,status:'Diberikan',harga:'8.500'},{no:2,resep:'R-091',nama:'Amlodipine Tab 10 mg',qty:1,ret:0,status:'Diberikan',harga:'2.500'},{no:3,resep:'R-093',nama:'SF Tab 500 mg',qty:2,ret:0,status:'Diberikan',harga:'3.200'},{no:4,resep:'R-094',nama:'Calcium Carbonate Tab 500 mg',qty:3,ret:0,status:'Diberikan',harga:'1.000'}],
+                bhp:  [{no:1,resep:'B-090',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'}]
+            },
+            '2026-04-10': {
+                obat: [{no:1,resep:'R-090',nama:'Furosemide Inj 40 mg',qty:1,ret:0,status:'Diberikan',harga:'8.500'},{no:2,resep:'R-091',nama:'Amlodipine Tab 10 mg',qty:1,ret:0,status:'Diberikan',harga:'2.500'},{no:3,resep:'R-092',nama:'Epoetin Alfa Inj 4000 IU',qty:1,ret:0,status:'Diberikan',harga:'125.000'},{no:4,resep:'R-093',nama:'SF Tab 500 mg',qty:2,ret:0,status:'Diberikan',harga:'3.200'},{no:5,resep:'R-094',nama:'Calcium Carbonate Tab 500 mg',qty:3,ret:0,status:'Diberikan',harga:'1.000'}],
+                bhp:  [{no:1,resep:'B-090',nama:'Spuit 10 mL',qty:3,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-093',nama:'Handscoen Steril L',qty:2,ret:0,status:'Digunakan',harga:'3.500'}]
+            }
+        }
+    },
+    {
+        id: 11, rm: '00042076', nama: 'LINDA PUSPITA', jk: 'Perempuan',
+        ruangan: 'Rawat Inap Jantung', kelas: 'Kelas II',
+        tglMasuk: '22/04/2026', tglKeluar: '-',
+        diagnosa: 'ACS, STEMI Anterior',
+        dokter: 'dr. Anton Hermawan, Sp.JP',
+        status: 'Masih Dirawat', penjamin: 'UMUM', noReg: 'REG-2026-0105',
+        statusBayar: 'Belum Lunas',
+        dates: ['2026-04-22','2026-04-23'],
+        data: {
+            '2026-04-22': {
+                obat: [{no:1,resep:'R-100',nama:'Enoxaparin Inj 60 mg',qty:2,ret:0,status:'Diberikan',harga:'85.000'},{no:2,resep:'R-101',nama:'Aspirin Tab 100 mg',qty:1,ret:0,status:'Diberikan',harga:'500'},{no:3,resep:'R-102',nama:'Clopidogrel Tab 75 mg',qty:1,ret:0,status:'Diberikan',harga:'7.500'},{no:4,resep:'R-103',nama:'Atorvastatin Tab 40 mg',qty:1,ret:0,status:'Diberikan',harga:'8.500'},{no:5,resep:'R-104',nama:'Bisoprolol Tab 5 mg',qty:1,ret:0,status:'Diberikan',harga:'4.500'}],
+                bhp:  [{no:1,resep:'B-100',nama:'Spuit 10 mL',qty:3,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-101',nama:'Infuset Dewasa',qty:1,ret:0,status:'Digunakan',harga:'12.500'},{no:3,resep:'B-102',nama:'Oksigen Nasal Cannula',qty:1,ret:0,status:'Digunakan',harga:'25.000'},{no:4,resep:'B-103',nama:'Monitor EKG Lead',qty:1,ret:0,status:'Digunakan',harga:'0'}]
+            },
+            '2026-04-23': {
+                obat: [{no:1,resep:'R-100',nama:'Enoxaparin Inj 60 mg',qty:2,ret:0,status:'Diberikan',harga:'85.000'},{no:2,resep:'R-101',nama:'Aspirin Tab 100 mg',qty:1,ret:0,status:'Diberikan',harga:'500'},{no:3,resep:'R-102',nama:'Clopidogrel Tab 75 mg',qty:1,ret:0,status:'Diberikan',harga:'7.500'},{no:4,resep:'R-103',nama:'Atorvastatin Tab 40 mg',qty:1,ret:0,status:'Diberikan',harga:'8.500'}],
+                bhp:  [{no:1,resep:'B-100',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-102',nama:'Oksigen Nasal Cannula',qty:1,ret:0,status:'Digunakan',harga:'25.000'}]
+            }
+        }
+    },
+    {
+        id: 12, rm: '00042077', nama: 'MUHAMMAD RIZKY', jk: 'Laki-laki',
+        ruangan: 'Rawat Inap Bedah', kelas: 'VIP',
+        tglMasuk: '21/04/2026', tglKeluar: '-',
+        diagnosa: 'Post Laparotomy, Ileus Obstruktif',
+        dokter: 'dr. Dewi Lestari, Sp.B',
+        status: 'Masih Dirawat', penjamin: 'UMUM', noReg: 'REG-2026-0112',
+        statusBayar: 'Belum Lunas',
+        dates: ['2026-04-21','2026-04-22','2026-04-23'],
+        data: {
+            '2026-04-21': {
+                obat: [{no:1,resep:'R-110',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:2,resep:'R-111',nama:'Metronidazole Infus 500 mg',qty:2,ret:0,status:'Diberikan',harga:'16.000'},{no:3,resep:'R-112',nama:'Fentanyl Inj 0.1 mg',qty:2,ret:0,status:'Diberikan',harga:'45.000'},{no:4,resep:'R-113',nama:'Ondansetron Inj 8 mg',qty:3,ret:0,status:'Diberikan',harga:'16.500'}],
+                bhp:  [{no:1,resep:'B-110',nama:'Spuit 10 mL',qty:4,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-111',nama:'Infuset Dewasa',qty:2,ret:0,status:'Digunakan',harga:'12.500'},{no:3,resep:'B-112',nama:'IV Catheter 18G',qty:1,ret:0,status:'Digunakan',harga:'14.000'},{no:4,resep:'B-113',nama:'NGT 16F',qty:1,ret:0,status:'Digunakan',harga:'18.000'},{no:5,resep:'B-114',nama:'Kassa Steril 40x40',qty:4,ret:0,status:'Digunakan',harga:'6.500'}]
+            },
+            '2026-04-22': {
+                obat: [{no:1,resep:'R-110',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:2,resep:'R-111',nama:'Metronidazole Infus 500 mg',qty:2,ret:0,status:'Diberikan',harga:'16.000'},{no:3,resep:'R-113',nama:'Ondansetron Inj 8 mg',qty:2,ret:0,status:'Diberikan',harga:'16.500'},{no:4,resep:'R-114',nama:'Tramadol Inj 100 mg',qty:2,ret:0,status:'Diberikan',harga:'25.000'}],
+                bhp:  [{no:1,resep:'B-110',nama:'Spuit 10 mL',qty:3,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-114',nama:'Kassa Steril 40x40',qty:3,ret:0,status:'Digunakan',harga:'6.500'},{no:3,resep:'B-115',nama:'Plester Hypafix 10 cm',qty:1,ret:0,status:'Digunakan',harga:'8.000'}]
+            },
+            '2026-04-23': {
+                obat: [{no:1,resep:'R-110',nama:'Ceftriaxone Inj 1 gr',qty:2,ret:0,status:'Diberikan',harga:'22.000'},{no:2,resep:'R-111',nama:'Metronidazole Infus 500 mg',qty:2,ret:0,status:'Diberikan',harga:'16.000'},{no:3,resep:'R-114',nama:'Tramadol Inj 100 mg',qty:1,ret:0,status:'Diberikan',harga:'25.000'},{no:4,resep:'R-115',nama:'Ranitidine Inj 50 mg',qty:2,ret:0,status:'Diberikan',harga:'12.000'}],
+                bhp:  [{no:1,resep:'B-110',nama:'Spuit 10 mL',qty:2,ret:0,status:'Digunakan',harga:'2.500'},{no:2,resep:'B-114',nama:'Kassa Steril 40x40',qty:2,ret:0,status:'Digunakan',harga:'6.500'}]
+            }
+        }
+    }
+];
+
+// ======================================================================
+// GLOBAL STATE
+// ======================================================================
+var selectedPatient = patientDB[0];
+
+// ======================================================================
+// HELPER
+// ======================================================================
+function formatTanggal(dateStr) {
+    var parts = dateStr.split('-');
+    return parts[2] + '/' + parts[1] + '/' + parts[0];
+}
+function formatRupiah(num) {
+    return num.toLocaleString('id-ID');
+}
+
+// ======================================================================
+// INISIALISASI DATATABLES
+// ======================================================================
+var tabelObat = $('#tabel-obat').DataTable({
+    paging: true, pageLength: 5, searching: false, info: false,
+    language: { emptyTable: 'Tidak ada resep obat pada tanggal ini', zeroRecords: 'Tidak ditemukan' },
+    columns: [
+        { data: 'no' }, { data: 'resep' }, { data: 'nama' },
+        { data: 'qty' }, { data: 'ret' }, { data: 'status' }, { data: 'harga' }
+    ]
+});
+
+var tabelBhp = $('#tabel-bhp').DataTable({
+    paging: true, pageLength: 5, searching: false, info: false,
+    language: { emptyTable: 'Tidak ada BHP/Alkes pada tanggal ini', zeroRecords: 'Tidak ditemukan' },
+    columns: [
+        { data: 'no' }, { data: 'resep' }, { data: 'nama' },
+        { data: 'qty' }, { data: 'ret' }, { data: 'status' }, { data: 'harga' }
+    ]
+});
+
+// ======================================================================
+// LOAD MONITORING DATA FOR SELECTED PATIENT
+// ======================================================================
+function loadPatientDetail(patient) {
+    selectedPatient = patient;
+
+    // Update patient info panel
+    var html = '';
+    html += '<div class="row info-row">';
+    html += '<div class="col-md-3"><span class="info-label">Nama Pasien:</span> <span class="info-value">' + patient.nama + '</span></div>';
+    html += '<div class="col-md-3"><span class="info-label">No. RM:</span> <span class="info-value">' + patient.rm + '</span></div>';
+    html += '<div class="col-md-3"><span class="info-label">Jenis Kelamin:</span> <span class="info-value">' + patient.jk + '</span></div>';
+    html += '<div class="col-md-3"><span class="info-label">No. REG:</span> <span class="info-value">' + patient.noReg + '</span></div>';
+    html += '</div>';
+    html += '<div class="row info-row">';
+    html += '<div class="col-md-3"><span class="info-label">Ruangan:</span> <span class="info-value">' + patient.ruangan + '</span></div>';
+    html += '<div class="col-md-3"><span class="info-label">Kelas:</span> <span class="info-value">' + patient.kelas + '</span></div>';
+    html += '<div class="col-md-3"><span class="info-label">Penjamin:</span> <span class="info-value">' + patient.penjamin + '</span></div>';
+    html += '<div class="col-md-3"><span class="info-label">Status Bayar:</span> <span class="info-value">' + patient.statusBayar + '</span></div>';
+    html += '</div>';
+    html += '<div class="row info-row">';
+    html += '<div class="col-md-3"><span class="info-label">Tgl Masuk:</span> <span class="info-value">' + patient.tglMasuk + '</span></div>';
+    html += '<div class="col-md-3"><span class="info-label">Tgl Keluar:</span> <span class="info-value">' + patient.tglKeluar + '</span></div>';
+    html += '<div class="col-md-3"><span class="info-label">Status:</span> <span class="label label-' + (patient.status === 'Masih Dirawat' ? 'warning' : 'success') + '">' + patient.status + '</span></div>';
+    html += '<div class="col-md-3"></div>';
+    html += '</div>';
+    html += '<div class="row info-row">';
+    html += '<div class="col-md-6"><span class="info-label">Diagnosa:</span> <span class="info-value">' + patient.diagnosa + '</span></div>';
+    html += '<div class="col-md-6"><span class="info-label">Dokter:</span> <span class="info-value">' + patient.dokter + '</span></div>';
+    html += '</div>';
+    $('#panel-info-pasien').html(html);
+    $('#selected-patient-name').text(patient.nama);
+
+    // Build date table
+    var tbodyHtml = '';
+    patient.dates.forEach(function(dateKey, idx) {
+        var formatted = formatTanggal(dateKey);
+        var activeClass = idx === 0 ? ' class="active"' : '';
+        tbodyHtml += '<tr data-tanggal="' + dateKey + '"' + activeClass + '>';
+        tbodyHtml += '<td><button class="btn btn-info btn-xs btn-detail">Detail</button></td>';
+        tbodyHtml += '<td>' + formatted + '</td></tr>';
+    });
+    $('#tabel-tanggal tbody').html(tbodyHtml);
+
+    // Load first date data
+    var firstDate = patient.dates[0];
+    loadDataForTanggal(firstDate);
+    var formatted = formatTanggal(firstDate);
+    $('#label-tanggal-obat, #label-tanggal-bhp').text(formatted);
+}
+
+// Load data for a specific date
+function loadDataForTanggal(tanggalKey) {
+    var pdata = selectedPatient.data[tanggalKey] || { obat: [], bhp: [] };
+    tabelObat.clear().rows.add(pdata.obat).draw();
+    tabelBhp.clear().rows.add(pdata.bhp).draw();
+}
+
+// ======================================================================
+// EVENT HANDLERS
+// ======================================================================
+
+// Klik Detail pada tabel tanggal
+$('#tabel-tanggal').on('click', '.btn-detail', function() {
+    var row = $(this).closest('tr');
+    var tanggalKey = row.data('tanggal');
+    var tglFormatted = formatTanggal(tanggalKey);
+
+    $('#tabel-tanggal tbody tr').removeClass('active');
+    row.addClass('active');
+    $('#label-tanggal-obat, #label-tanggal-bhp').text(tglFormatted);
+    loadDataForTanggal(tanggalKey);
+});
+
+// ======================================================================
+// CETAK CPOR — Landscape Matrix (Dynamic per selectedPatient)
+// ======================================================================
+function cetakCPOR() {
+    var p = selectedPatient;
+    var dates = p.dates;
+    var maxDays = 10;
+
+    var html = '';
+    html += '<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Cetak CPOR - ' + p.nama + '</title>';
+    html += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">';
+    html += '<style>';
+    html += '@page { size: landscape; margin: 5mm; }';
+    html += 'body { font-size: 10px; color: #000; font-family: Arial, sans-serif; }';
+    html += '.paper { background: #fff; width: 100%; padding: 10px; }';
+    html += '.table-cpor { width: 100%; border-collapse: collapse; table-layout: fixed; }';
+    html += '.table-cpor th, .table-cpor td { border: 1px solid #000 !important; padding: 4px 2px; vertical-align: middle; }';
+    html += '.bg-grey { background-color: #f2f2f2 !important; font-weight: bold; text-align: center; }';
+    html += '.text-left { text-align: left !important; padding-left: 8px !important; }';
+    html += '.text-center { text-align: center !important; }';
+    html += '.text-right { text-align: right !important; padding-right: 8px !important; }';
+    html += '.col-no { width: 30px; } .col-nama { width: 220px; } .col-tgl { width: 35px; }';
+    html += '.col-sm { width: 45px; } .col-price { width: 85px; }';
+    html += '.header-val { font-weight: bold; text-transform: uppercase; }';
+    html += '@media print { .btn-print { display: none; } .paper { margin: 0; padding: 0; } }';
+    html += '</style></head><body>';
+    html += '<div class="text-center my-3 btn-print"><button onclick="window.print()" class="btn btn-dark">Cetak Laporan CPOR</button></div>';
+    html += '<div class="paper">';
+    html += '<div class="text-center mb-2"><h6 class="font-weight-bold">CATATAN PEMBERIAN OBAT PASIEN RAWAT INAP</h6></div>';
+
+    // Header
+    html += '<table class="table-cpor mb-2"><tr>';
+    html += '<td style="width:15%;" class="p-0"><table class="w-100 h-100" style="border:none!important;"><tr><td class="bg-grey" style="border:none!important;border-bottom:1px solid #000!important;">INSTRUKSI TERAPI</td></tr>';
+    html += '<tr><td style="border:none!important;border-bottom:1px solid #000!important;">Ruangan: <br><span class="header-val">' + p.ruangan + '</span></td></tr>';
+    html += '<tr><td style="border:none!important;">Kelas: <br><span class="header-val">' + p.kelas + '</span></td></tr></table></td>';
+    html += '<td class="text-left" style="width:30%;">Nama Pasien : <span class="header-val">' + p.nama + '</span><br>No. RM : <span class="header-val">' + p.rm + '</span><br>Jenis Kelamin : <span class="header-val">' + p.jk + '</span><br>Tgl Masuk : <span class="header-val">' + p.tglMasuk + '</span><br>Tgl Keluar : <span class="header-val">' + p.tglKeluar + '</span></td>';
+    html += '<td class="text-left" style="width:27%;">Diagnosa : <br>' + p.diagnosa.split(',').map(function(d,i){ return (i+1)+'. <span class="header-val">'+d.trim()+'</span>'; }).join('<br>') + '</td>';
+    html += '<td class="text-left" style="width:28%;">Dokter : <br>' + p.dokter.split('<br>').map(function(d,i){ return (i+1)+'. <span class="header-val">'+d.trim()+'</span>'; }).join('<br>') + '</td>';
+    html += '</tr></table>';
+
+    // Build matrix data
+    var obatMap = {}, bhpMap = {};
+    dates.forEach(function(tgl) {
+        var dd = p.data[tgl] || { obat:[], bhp:[] };
+        dd.obat.forEach(function(o) {
+            if (!obatMap[o.nama]) obatMap[o.nama] = { nama: o.nama, harga: o.harga, qtyPerDay: {} };
+            obatMap[o.nama].qtyPerDay[tgl] = o.qty;
+        });
+        dd.bhp.forEach(function(b) {
+            if (!bhpMap[b.nama]) bhpMap[b.nama] = { nama: b.nama, harga: b.harga, qtyPerDay: {} };
+            bhpMap[b.nama].qtyPerDay[tgl] = b.qty;
+        });
+    });
+    var obatRows = Object.values(obatMap);
+    var bhpRows = Object.values(bhpMap);
+
+    function calcTotal(items) {
+        var total = 0;
+        items.forEach(function(item) {
+            var jml = 0;
+            dates.forEach(function(tgl) { jml += (item.qtyPerDay[tgl] || 0); });
+            total += jml * parseInt(item.harga.replace(/\./g, ''), 10);
+        });
+        return total;
+    }
+    var totalBiaya = calcTotal(obatRows) + calcTotal(bhpRows);
+
+    // Matrix table header
+    html += '<table class="table-cpor"><thead>';
+    html += '<tr class="bg-grey"><th class="col-no" rowspan="2">NO</th><th class="col-nama" rowspan="2">NAMA PERBEKALAN FARMASI</th><th colspan="' + maxDays + '">TANGGAL RAWAT (QTY)</th><th class="col-sm" rowspan="2">RET</th><th class="col-sm" rowspan="2">JML</th><th class="col-price" rowspan="2">Harga Satuan</th><th class="col-price" rowspan="2">Total Harga</th></tr>';
+    html += '<tr class="bg-grey text-center">';
+    for (var d = 1; d <= maxDays; d++) html += '<td class="col-tgl">' + d + '</td>';
+    html += '</tr></thead><tbody>';
+
+    // OBAT section
+    html += '<tr class="bg-grey"><td colspan="' + (maxDays+5) + '" class="text-left">OBAT</td></tr>';
+    html += buildMatrixRows(obatRows, dates, maxDays, 1);
+
+    // BHP section
+    html += '<tr class="bg-grey"><td colspan="' + (maxDays+5) + '" class="text-left">ALKES / BHP</td></tr>';
+    html += buildMatrixRows(bhpRows, dates, maxDays, obatRows.length + 1);
+
+    html += '</tbody><tfoot><tr>';
+    html += '<td colspan="2" rowspan="2" class="text-center" style="vertical-align:top;padding-top:10px;">Tanda Terima<br><br><br>( Pasien / Keluarga / Perawat )<br><small>*) Coret yang tidak perlu</small></td>';
+    for (var f=1; f<=maxDays; f++) html += '<td class="col-tgl"></td>';
+    html += '<td colspan="3" class="bg-grey text-right">TOTAL BIAYA :</td>';
+    html += '<td class="text-right font-weight-bold" style="font-size:11px;">' + formatRupiah(totalBiaya) + '</td>';
+    html += '</tr><tr><td colspan="' + maxDays + '" class="text-center" style="font-size:8px;height:30px;">Catatan Pemberian Obat Rawat Inap</td><td colspan="4" class="bg-grey"></td></tr></tfoot>';
+    html += '</table></div></body></html>';
+
+    var w = window.open('', '_blank', 'width=1200,height=800');
+    if (!w) { alert('Popup diblokir. Izinkan popup, lalu klik Cetak lagi.'); return; }
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    w.onload = function() { setTimeout(function() { w.print(); }, 500); };
+}
+
+function buildMatrixRows(items, dates, maxDays, startNo) {
+    var html = '', no = startNo;
+    items.forEach(function(item) {
+        var jml = 0;
+        html += '<tr>';
+        html += '<td class="text-center">' + (no++) + '</td>';
+        html += '<td class="text-left">' + item.nama + '</td>';
+        for (var d = 0; d < maxDays; d++) {
+            var qty = (d < dates.length) ? (item.qtyPerDay[dates[d]] || '') : '';
+            if (qty !== '') jml += qty;
+            html += '<td>' + (qty !== '' ? qty : '') + '</td>';
+        }
+        html += '<td class="text-center">0</td>';
+        html += '<td class="text-center">' + jml + '</td>';
+        html += '<td class="text-right">' + item.harga + '</td>';
+        html += '<td class="text-right">' + formatRupiah(jml * parseInt(item.harga.replace(/\./g,''),10)) + '</td>';
+        html += '</tr>';
+    });
+    return html;
+}
+
+// ======================================================================
+// INIT — On document ready
+// ======================================================================
+$(document).ready(function() {
+    // Parse patientId from URL query string
+    var params = new URLSearchParams(window.location.search);
+    var patientId = parseInt(params.get('patientId'), 10);
+    var patient = patientDB.find(function(p) { return p.id === patientId; }) || patientDB[0];
+
+    loadPatientDetail(patient);
+});
+
+</script>
+
+</body>
+</html>

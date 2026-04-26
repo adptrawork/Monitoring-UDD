@@ -1,177 +1,330 @@
 <!DOCTYPE html>
+<!--
+    PROTOTYPE — NOT FOR PRODUCTION
+    Halaman Pencarian & Daftar Pasien Monitoring UDD
+    Lampiran Redmine Ticket untuk Developer
+
+    Flow: index.html (cari & pilih pasien) → prototype-monitoring-udd.html?patientId=X
+-->
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak CPOR - Final Layout</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        @page { size: landscape; margin: 5mm; }
-        body { font-size: 10px; color: #000; font-family: Arial, sans-serif; }
-        .paper { background: #fff; width: 100%; padding: 10px; }
-        
-        /* Table Global Styles */
-        .table-cpor { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        .table-cpor th, .table-cpor td { border: 1px solid #000 !important; padding: 4px 2px; vertical-align: middle; }
-        
-        .bg-grey { background-color: #f2f2f2 !important; font-weight: bold; text-align: center; }
-        .text-left { text-align: left !important; padding-left: 8px !important; }
-        .text-center { text-align: center !important; }
-        .text-right { text-align: right !important; padding-right: 8px !important; }
+    <title>Monitoring UDD — Pencarian Pasien</title>
 
-        /* Column Widths */
-        .col-no { width: 30px; }
-        .col-nama { width: 220px; }
-        .col-tgl { width: 35px; }
-        .col-sm { width: 45px; }
-        .col-price { width: 85px; }
-        
-        .header-val { font-weight: bold; text-transform: uppercase; }
-        
-        @media print {
-            .btn-print { display: none; }
-            .paper { margin: 0; padding: 0; }
-        }
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
+
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; font-size: 13px; }
+        body { background: #f0f2f5; font-family: Arial, sans-serif; }
+        .main-container { padding: 20px 25px; max-width: 1400px; margin: 0 auto; }
+
+        .panel-primary > .panel-heading { background: #337ab7; border-color: #2e6da4; color: #fff; }
+        .panel-heading strong { font-size: 14px; }
+
+        .search-panel { margin-bottom: 20px; }
+        .search-panel .form-group { margin-bottom: 8px; }
+        .search-panel label { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 2px; }
+        .search-panel .form-control { font-size: 13px; height: 32px; padding: 4px 10px; }
+        .search-panel .input-group-addon { font-size: 13px; padding: 4px 10px; }
+
+        #tabel-pasien_wrapper { font-size: 12px; }
+        #tabel-pasien td { font-size: 12px; vertical-align: middle; }
+        #tabel-pasien tbody tr { cursor: pointer; }
+        #tabel-pasien .btn-pilih { padding: 3px 14px; font-size: 12px; }
+
+        .status-badge { font-size: 11px; padding: 3px 8px; }
+        .header-bar { margin-bottom: 20px; }
+        .header-bar h4 { margin: 0; color: #337ab7; }
+        .header-bar small { color: #888; }
     </style>
 </head>
 <body>
 
-<div class="text-center my-3 btn-print">
-    <button onclick="window.print()" class="btn btn-dark">Cetak Laporan CPOR</button>
-</div>
+<div class="main-container">
 
-<div class="paper">
-    <div class="text-center mb-2">
-        <h6 class="font-weight-bold">CATATAN PEMBERIAN OBAT PASIEN RAWAT INAP</h6>
+    <!-- HEADER -->
+    <div class="header-bar">
+        <h4><i class="fa fa-heartbeat"></i> Monitoring Unit Dose Dispensing (UDD) — Rawat Inap</h4>
+        <small><i class="fa fa-search"></i> Pencarian & Daftar Pasien</small>
     </div>
 
-    <table class="table-cpor mb-2">
-        <tr>
-            <td style="width: 15%;" class="p-0">
-                <table class="w-100 h-100" style="border: none !important;">
-                    <tr><td class="bg-grey" style="border: none !important; border-bottom: 1px solid #000 !important;">INSTRUKSI TERAPI</td></tr>
-                    <tr><td style="border: none !important; border-bottom: 1px solid #000 !important;">Ruangan: <br><span class="header-val">Rawat Inap Jantung</span></td></tr>
-                    <tr><td style="border: none !important;">Kelas: <br><span class="header-val">VIP</span></td></tr>
-                </table>
-            </td>
-            <td class="text-left" style="width: 30%;">
-                Nama Pasien : <span class="header-val">RAHMAWATI</span> <br>
-                No. RM : <span class="header-val">00042066</span> <br>
-                Jenis Kelamin : <span class="header-val">Perempuan</span> <br>
-                Tgl Masuk : <span class="header-val">11/03/2026</span> <br>
-                Tgl Keluar : <span class="header-val">-</span>
-            </td>
-            <td class="text-left" style="width: 27%;">
-                Diagnosa : <br>
-                1. <span class="header-val">Dyspepsia</span> <br>
-                2. <span class="header-val">Hypertension</span>
-            </td>
-            <td class="text-left" style="width: 28%;">
-                Dokter : <br>
-                1. <span class="header-val">dr. Budi Santoso, Sp.PD</span>
-            </td>
-        </tr>
-    </table>
+    <!-- ================================================================ -->
+    <!-- PANEL PENCARIAN PASIEN                                           -->
+    <!-- ================================================================ -->
+    <div class="panel panel-primary search-panel">
+        <div class="panel-heading">
+            <strong><i class="fa fa-filter"></i> Filter Pencarian</strong>
+        </div>
+        <div class="panel-body" style="padding: 12px 15px;">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Tanggal Awal</label>
+                        <div class="input-group date">
+                            <input type="text" class="form-control" id="tgl-awal" value="27/04/2026" readonly>
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Tgl Akhir</label>
+                        <div class="input-group date">
+                            <input type="text" class="form-control" id="tgl-akhir" value="27/04/2026" readonly>
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Nama Unit</label>
+                        <select class="form-control" id="filter-unit">
+                            <option value="">Semua Unit</option>
+                            <option>Rawat Inap Jantung</option>
+                            <option>Rawat Inap Bedah</option>
+                            <option>Rawat Inap Anak</option>
+                            <option>Rawat Inap Penyakit Dalam</option>
+                            <option>Rawat Inap Kebidanan</option>
+                            <option>Rawat Inap Saraf</option>
+                            <option>Rawat Inap Paru</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select class="form-control" id="filter-status">
+                            <option value="">Semua</option>
+                            <option>Masih Dirawat</option>
+                            <option>Sudah Pulang</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Penjamin</label>
+                        <input type="text" class="form-control" id="filter-penjamin" placeholder="Semua">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>No. RM</label>
+                        <input type="text" class="form-control" id="filter-rm" placeholder="Cari No. RM">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Status Pembayaran</label>
+                        <select class="form-control" id="filter-bayar">
+                            <option value="">Semua</option>
+                            <option>Lunas</option>
+                            <option>Belum Lunas</option>
+                            <option>BPJS</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>No. REG</label>
+                        <input type="text" class="form-control" id="filter-reg" placeholder="Cari No. REG">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary btn-sm btn-block" id="btn-cari" style="margin-top:0;">
+                            <i class="fa fa-search"></i> Cari
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-default btn-sm btn-block" id="btn-reset" style="margin-top:0;">
+                            <i class="fa fa-refresh"></i> Tampilkan Semua
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <table class="table-cpor">
-        <thead>
-            <tr class="bg-grey">
-                <th class="col-no" rowspan="2">NO</th>
-                <th class="col-nama" rowspan="2">NAMA PERBEKALAN FARMASI</th>
-                <th colspan="10">TANGGAL RAWAT (QTY)</th> 
-                <th class="col-sm" rowspan="2">RET</th>
-                <th class="col-sm" rowspan="2">JML</th>
-                <th class="col-price" rowspan="2">Harga Satuan</th>
-                <th class="col-price" rowspan="2">Total Harga</th>
-            </tr>
-            <tr class="bg-grey text-center">
-                <td class="col-tgl">1</td><td class="col-tgl">2</td><td class="col-tgl">3</td><td class="col-tgl">4</td>
-                <td class="col-tgl">5</td><td class="col-tgl">6</td><td class="col-tgl">7</td><td class="col-tgl">8</td>
-                <td class="col-tgl">9</td><td class="col-tgl">10</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="bg-grey"><td colspan="16" class="text-left">OBAT</td></tr>
-            <tr>
-                <td class="text-center">1</td>
-                <td class="text-left">Ketorolac Inj 30</td>
-                <td>3</td><td>2</td><td>3</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td>
-                <td class="text-center">0</td>
-                <td class="text-center">9</td>
-                <td class="text-right">15.000</td>
-                <td class="text-right">135.000</td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td class="text-left">Omeprazole Inj 40 mg</td>
-                <td>1</td><td>1</td><td>1</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td>
-                <td class="text-center">0</td>
-                <td class="text-center">4</td>
-                <td class="text-right">18.500</td>
-                <td class="text-right">74.000</td>
-            </tr>
-            <tr>
-                <td class="text-center">3</td>
-                <td class="text-left">Ceftriaxone Inj 1 gr</td>
-                <td>2</td><td>2</td><td>2</td><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td>
-                <td class="text-center">0</td>
-                <td class="text-center">8</td>
-                <td class="text-right">22.000</td>
-                <td class="text-right">176.000</td>
-            </tr>
+    <!-- ================================================================ -->
+    <!-- TABEL DAFTAR PASIEN                                              -->
+    <!-- ================================================================ -->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <strong><i class="fa fa-users"></i> Daftar Pasien Rawat Inap</strong>
+            <span class="badge pull-right" id="jumlah-pasien" style="margin-top:-2px;">12 data</span>
+        </div>
+        <div class="panel-body" style="padding: 10px;">
+            <table class="table table-bordered table-striped table-hover" id="tabel-pasien" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="width:30px;">No</th>
+                        <th>No. RM</th>
+                        <th>Nama Pasien</th>
+                        <th>Ruangan</th>
+                        <th>Kelas</th>
+                        <th>Tgl Masuk</th>
+                        <th>Status</th>
+                        <th>Penjamin</th>
+                        <th>No. REG</th>
+                        <th style="width:70px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
 
-            <tr class="bg-grey"><td colspan="16" class="text-left">ALKES / BHP</td></tr>
-            <tr>
-                <td class="text-center">1</td>
-                <td class="text-left">Spuit 10 mL</td>
-                <td>1</td><td>2</td><td>2</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td>
-                <td class="text-center">0</td>
-                <td class="text-center">6</td>
-                <td class="text-right">2.500</td>
-                <td class="text-right">15.000</td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td class="text-left">Infuset Dewasa</td>
-                <td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                <td class="text-center">0</td>
-                <td class="text-center">1</td>
-                <td class="text-right">12.500</td>
-                <td class="text-right">12.500</td>
-            </tr>
-            <tr>
-                <td class="text-center">3</td>
-                <td class="text-left">IV Catheter 20G</td>
-                <td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                <td class="text-center">0</td>
-                <td class="text-center">1</td>
-                <td class="text-right">14.000</td>
-                <td class="text-right">14.000</td>
-            </tr>
-        </tbody>
-        
-        <tfoot>
-            <tr>
-                <td colspan="2" rowspan="2" class="text-center" style="vertical-align: top; padding-top: 10px;">
-                    Tanda Terima<br><br><br>
-                    ( Pasien / Keluarga / Perawat )<br>
-                    <small>*) Coret yang tidak perlu</small>
-                </td>
-                <td class="col-tgl"></td><td class="col-tgl"></td><td class="col-tgl"></td><td class="col-tgl"></td>
-                <td class="col-tgl"></td><td class="col-tgl"></td><td class="col-tgl"></td><td class="col-tgl"></td>
-                <td class="col-tgl"></td><td class="col-tgl"></td>
-                <td colspan="3" class="bg-grey text-right">TOTAL BIAYA :</td>
-                <td class="text-right font-weight-bold" style="font-size: 11px;">426.500</td>
-            </tr>
-            <tr>
-                <td colspan="10" class="text-center" style="font-size: 8px; height: 30px;">
-                    Catatan Pemberian Obat Rawat Inap
-                </td>
-                <td colspan="4" class="bg-grey"></td>
-            </tr>
-        </tfoot>
-    </table>
-</div>
+</div><!-- /main-container -->
+
+<!-- SCRIPTS -->
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.id.min.js"></script>
+
+<script>
+// ======================================================================
+// DATABASE PASIEN — 12 pasien, data realistis (summary only)
+// ======================================================================
+var patientDB = [
+    { id: 1,  rm: '00042066', nama: 'RAHMAWATI',       ruangan: 'Rawat Inap Jantung',        kelas: 'VIP',      tglMasuk: '11/03/2026', status: 'Masih Dirawat', penjamin: 'BPJS',                   noReg: 'REG-2026-0001', statusBayar: 'BPJS',          jk: 'Perempuan', tglKeluar: '-',             diagnosa: 'Dyspepsia, Hypertension',           dokter: 'dr. Budi Santoso, Sp.PD' },
+    { id: 2,  rm: '00042067', nama: 'AHMAD SYAIFUL',    ruangan: 'Rawat Inap Bedah',          kelas: 'Kelas I',  tglMasuk: '24/03/2026', status: 'Sudah Pulang',   penjamin: 'UMUM',                   noReg: 'REG-2026-0015', statusBayar: 'Lunas',         jk: 'Laki-laki', tglKeluar: '28/03/2026',  diagnosa: 'Appendicitis Akut',                  dokter: 'dr. Dewi Lestari, Sp.B' },
+    { id: 3,  rm: '00042068', nama: 'SITI AMINAH',      ruangan: 'Rawat Inap Anak',           kelas: 'Kelas II', tglMasuk: '01/04/2026', status: 'Masih Dirawat', penjamin: 'BPJS',                   noReg: 'REG-2026-0024', statusBayar: 'BPJS',          jk: 'Perempuan', tglKeluar: '-',             diagnosa: 'DHF Grade II',                       dokter: 'dr. Ratna Dewi, Sp.A' },
+    { id: 4,  rm: '00042069', nama: 'BUDI PRASETYO',    ruangan: 'Rawat Inap Penyakit Dalam', kelas: 'Kelas III',tglMasuk: '05/04/2026', status: 'Masih Dirawat', penjamin: 'BPJS',                   noReg: 'REG-2026-0031', statusBayar: 'BPJS',          jk: 'Laki-laki', tglKeluar: '-',             diagnosa: 'Diabetes Melitus Tipe 2, Neuropati', dokter: 'dr. Hendra Wijaya, Sp.PD' },
+    { id: 5,  rm: '00042070', nama: 'RINA WULANDARI',   ruangan: 'Rawat Inap Jantung',        kelas: 'VIP',      tglMasuk: '10/04/2026', status: 'Masih Dirawat', penjamin: 'UMUM',                   noReg: 'REG-2026-0042', statusBayar: 'Belum Lunas',   jk: 'Perempuan', tglKeluar: '-',             diagnosa: 'CHF, Cardiomyopathy',                dokter: 'dr. Budi Santoso, Sp.PD<br>dr. Anton Hermawan, Sp.JP' },
+    { id: 6,  rm: '00042071', nama: 'DEDI KUSNADI',     ruangan: 'Rawat Inap Bedah',          kelas: 'Kelas I',  tglMasuk: '15/04/2026', status: 'Masih Dirawat', penjamin: 'BPJS Ketenagakerjaan',   noReg: 'REG-2026-0051', statusBayar: 'BPJS',          jk: 'Laki-laki', tglKeluar: '-',             diagnosa: 'Fraktur Femur Sinistra Tertutup',    dokter: 'dr. Dewi Lestari, Sp.B<br>dr. Rudi Hartono, Sp.OT' },
+    { id: 7,  rm: '00042072', nama: 'NUR HASANAH',      ruangan: 'Rawat Inap Kebidanan',      kelas: 'VIP',      tglMasuk: '18/04/2026', status: 'Sudah Pulang',   penjamin: 'BPJS',                   noReg: 'REG-2026-0063', statusBayar: 'BPJS',          jk: 'Perempuan', tglKeluar: '22/04/2026',  diagnosa: 'Post Sectio Caesarea, P2A0',         dokter: 'dr. Siti Fatimah, Sp.OG' },
+    { id: 8,  rm: '00042073', nama: 'AGUS RIYANTO',     ruangan: 'Rawat Inap Saraf',          kelas: 'Kelas II', tglMasuk: '20/04/2026', status: 'Masih Dirawat', penjamin: 'BPJS',                   noReg: 'REG-2026-0078', statusBayar: 'BPJS',          jk: 'Laki-laki', tglKeluar: '-',             diagnosa: 'Stroke Non-Hemorrhagic, Hemiparesis', dokter: 'dr. Indra Gunawan, Sp.S' },
+    { id: 9,  rm: '00042074', nama: 'FITRI HANDAYANI',  ruangan: 'Rawat Inap Paru',           kelas: 'Kelas III',tglMasuk: '12/04/2026', status: 'Masih Dirawat', penjamin: 'BPJS',                   noReg: 'REG-2026-0085', statusBayar: 'BPJS',          jk: 'Perempuan', tglKeluar: '-',             diagnosa: 'Pneumonia Komunitas, TB Paru Suspek', dokter: 'dr. Ahmad Fauzi, Sp.P' },
+    { id: 10, rm: '00042075', nama: 'HENDRA GUNAWAN',   ruangan: 'Rawat Inap Penyakit Dalam', kelas: 'Kelas I',  tglMasuk: '08/04/2026', status: 'Masih Dirawat', penjamin: 'BPJS',                   noReg: 'REG-2026-0092', statusBayar: 'BPJS',          jk: 'Laki-laki', tglKeluar: '-',             diagnosa: 'CKD Stage IV, Anemia, Hipertensi',    dokter: 'dr. Hendra Wijaya, Sp.PD<br>dr. Maya Sari, Sp.GK' },
+    { id: 11, rm: '00042076', nama: 'LINDA PUSPITA',    ruangan: 'Rawat Inap Jantung',        kelas: 'Kelas II', tglMasuk: '22/04/2026', status: 'Masih Dirawat', penjamin: 'UMUM',                   noReg: 'REG-2026-0105', statusBayar: 'Belum Lunas',   jk: 'Perempuan', tglKeluar: '-',             diagnosa: 'ACS, STEMI Anterior',                dokter: 'dr. Anton Hermawan, Sp.JP' },
+    { id: 12, rm: '00042077', nama: 'MUHAMMAD RIZKY',   ruangan: 'Rawat Inap Bedah',          kelas: 'VIP',      tglMasuk: '21/04/2026', status: 'Masih Dirawat', penjamin: 'UMUM',                   noReg: 'REG-2026-0112', statusBayar: 'Belum Lunas',   jk: 'Laki-laki', tglKeluar: '-',             diagnosa: 'Post Laparotomy, Ileus Obstruktif',  dokter: 'dr. Dewi Lestari, Sp.B' }
+];
+
+// ======================================================================
+// INISIALISASI DATATABLES
+// ======================================================================
+var tabelPasien = $('#tabel-pasien').DataTable({
+    paging: true,
+    pageLength: 10,
+    searching: true,
+    info: true,
+    order: [[0, 'asc']],
+    language: {
+        search: 'Cari: ',
+        lengthMenu: 'Tampilkan _MENU_ data',
+        info: 'Menampilkan _START_ s/d _END_ dari _TOTAL_ pasien',
+        emptyTable: 'Tidak ada data pasien',
+        zeroRecords: 'Tidak ditemukan pasien yang cocok'
+    },
+    columns: [
+        { data: 'no' },
+        { data: 'rm' },
+        { data: 'nama' },
+        { data: 'ruangan' },
+        { data: 'kelas' },
+        { data: 'tglMasuk' },
+        { data: 'status', render: function(d) {
+            var cls = d === 'Masih Dirawat' ? 'warning' : 'success';
+            return '<span class="label label-' + cls + ' status-badge">' + d + '</span>';
+        }},
+        { data: 'penjamin' },
+        { data: 'noReg' },
+        { data: null, orderable: false, defaultContent: '<button class="btn btn-success btn-xs btn-pilih"><i class="fa fa-arrow-right"></i> Pilih</button>' }
+    ]
+});
+
+// ======================================================================
+// LOAD PATIENT TABLE WITH OPTIONAL FILTER
+// ======================================================================
+function loadPatientTable(filter) {
+    filter = filter || {};
+    var rows = [];
+    patientDB.forEach(function(p) {
+        if (filter.unit && p.ruangan !== filter.unit) return;
+        if (filter.status && p.status !== filter.status) return;
+        if (filter.penjamin && p.penjamin.toLowerCase().indexOf(filter.penjamin.toLowerCase()) < 0) return;
+        if (filter.rm && p.rm.indexOf(filter.rm) < 0) return;
+        if (filter.reg && p.noReg.toLowerCase().indexOf(filter.reg.toLowerCase()) < 0) return;
+        if (filter.bayar && p.statusBayar !== filter.bayar) return;
+        rows.push({
+            no: rows.length + 1,
+            rm: p.rm, nama: p.nama, ruangan: p.ruangan, kelas: p.kelas,
+            tglMasuk: p.tglMasuk, status: p.status, penjamin: p.penjamin,
+            noReg: p.noReg, patientId: p.id
+        });
+    });
+    tabelPasien.clear().rows.add(rows).draw();
+    $('#jumlah-pasien').text(rows.length + ' data');
+}
+
+// ======================================================================
+// EVENT HANDLERS
+// ======================================================================
+
+// Klik "Pilih" → navigasi ke halaman detail
+$('#tabel-pasien tbody').on('click', '.btn-pilih', function() {
+    var rowData = tabelPasien.row($(this).closest('tr')).data();
+    if (!rowData) return;
+    window.location.href = 'prototype-monitoring-udd.html?patientId=' + rowData.patientId;
+});
+
+// Double-click row juga bisa
+$('#tabel-pasien tbody').on('dblclick', 'tr', function() {
+    var rowData = tabelPasien.row(this).data();
+    if (!rowData) return;
+    window.location.href = 'prototype-monitoring-udd.html?patientId=' + rowData.patientId;
+});
+
+// Tombol Cari
+$('#btn-cari').on('click', function() {
+    loadPatientTable({
+        unit: $('#filter-unit').val(),
+        status: $('#filter-status').val(),
+        penjamin: $('#filter-penjamin').val().trim(),
+        rm: $('#filter-rm').val().trim(),
+        reg: $('#filter-reg').val().trim(),
+        bayar: $('#filter-bayar').val()
+    });
+});
+
+// Tombol Reset
+$('#btn-reset').on('click', function() {
+    $('#filter-unit, #filter-status, #filter-bayar').val('');
+    $('#filter-penjamin, #filter-rm, #filter-reg').val('');
+    loadPatientTable();
+});
+
+// Enter key trigger search
+$('#filter-rm, #filter-reg, #filter-penjamin').on('keypress', function(e) {
+    if (e.which === 13) $('#btn-cari').click();
+});
+
+// ======================================================================
+// INIT
+// ======================================================================
+$(document).ready(function() {
+    $('.input-group.date').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    loadPatientTable();
+});
+</script>
 
 </body>
 </html>

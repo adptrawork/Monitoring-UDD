@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak CPOR - Final Layout</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        @page { size: landscape; margin: 5mm; }
+        body { font-size: 10px; color: #000; font-family: Arial, sans-serif; }
+        .paper { background: #fff; width: 100%; padding: 10px; }
+        
+        /* Table Global Styles */
+        .table-cpor { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .table-cpor th, .table-cpor td { border: 1px solid #000 !important; padding: 4px 2px; vertical-align: middle; }
+        
+        .bg-grey { background-color: #f2f2f2 !important; font-weight: bold; text-align: center; }
+        .text-left { text-align: left !important; padding-left: 8px !important; }
+        .text-center { text-align: center !important; }
+        .text-right { text-align: right !important; padding-right: 8px !important; }
+
+        /* Column Widths */
+        .col-no { width: 30px; }
+        .col-nama { width: 220px; }
+        .col-tgl { width: 35px; }
+        .col-sm { width: 45px; }
+        .col-price { width: 85px; }
+        
+        .header-val { font-weight: bold; text-transform: uppercase; }
+        
+        @media print {
+            .btn-print { display: none; }
+            .paper { margin: 0; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="text-center my-3 btn-print">
+    <button onclick="window.print()" class="btn btn-dark">Cetak Laporan CPOR</button>
+</div>
+
+<div class="paper">
+    <div class="text-center mb-2">
+        <h6 class="font-weight-bold">CATATAN PEMBERIAN OBAT PASIEN RAWAT INAP</h6>
+    </div>
+
+    <table class="table-cpor mb-2">
+        <tr>
+            <td style="width: 15%;" class="p-0">
+                <table class="w-100 h-100" style="border: none !important;">
+                    <tr><td class="bg-grey" style="border: none !important; border-bottom: 1px solid #000 !important;">INSTRUKSI TERAPI</td></tr>
+                    <tr><td style="border: none !important; border-bottom: 1px solid #000 !important;">Ruangan: <br><span class="header-val">Rawat Inap Jantung</span></td></tr>
+                    <tr><td style="border: none !important;">Kelas: <br><span class="header-val">VIP</span></td></tr>
+                </table>
+            </td>
+            <td class="text-left" style="width: 30%;">
+                Nama Pasien : <span class="header-val">RAHMAWATI</span> <br>
+                No. RM : <span class="header-val">00042066</span> <br>
+                Jenis Kelamin : <span class="header-val">Perempuan</span> <br>
+                Tgl Masuk : <span class="header-val">11/03/2026</span> <br>
+                Tgl Keluar : <span class="header-val">-</span>
+            </td>
+            <td class="text-left" style="width: 27%;">
+                Diagnosa : <br>
+                1. <span class="header-val">Dyspepsia</span> <br>
+                2. <span class="header-val">Hypertension</span>
+            </td>
+            <td class="text-left" style="width: 28%;">
+                Dokter : <br>
+                1. <span class="header-val">dr. Budi Santoso, Sp.PD</span>
+            </td>
+        </tr>
+    </table>
+
+    <table class="table-cpor">
+        <thead>
+            <tr class="bg-grey">
+                <th class="col-no" rowspan="2">NO</th>
+                <th class="col-nama" rowspan="2">NAMA PERBEKALAN FARMASI</th>
+                <th colspan="10">TANGGAL RAWAT (QTY)</th> 
+                <th class="col-sm" rowspan="2">RET</th>
+                <th class="col-sm" rowspan="2">JML</th>
+                <th class="col-price" rowspan="2">Harga Satuan</th>
+                <th class="col-price" rowspan="2">Total Harga</th>
+            </tr>
+            <tr class="bg-grey text-center">
+                <td class="col-tgl">1</td><td class="col-tgl">2</td><td class="col-tgl">3</td><td class="col-tgl">4</td>
+                <td class="col-tgl">5</td><td class="col-tgl">6</td><td class="col-tgl">7</td><td class="col-tgl">8</td>
+                <td class="col-tgl">9</td><td class="col-tgl">10</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="bg-grey"><td colspan="16" class="text-left">OBAT</td></tr>
+            <tr>
+                <td class="text-center">1</td>
+                <td class="text-left">Ketorolac Inj 30</td>
+                <td>3</td><td>2</td><td>3</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td>
+                <td class="text-center">0</td>
+                <td class="text-center">9</td>
+                <td class="text-right">15.000</td>
+                <td class="text-right">135.000</td>
+            </tr>
+            <tr>
+                <td class="text-center">2</td>
+                <td class="text-left">Omeprazole Inj 40 mg</td>
+                <td>1</td><td>1</td><td>1</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td>
+                <td class="text-center">0</td>
+                <td class="text-center">4</td>
+                <td class="text-right">18.500</td>
+                <td class="text-right">74.000</td>
+            </tr>
+            <tr>
+                <td class="text-center">3</td>
+                <td class="text-left">Ceftriaxone Inj 1 gr</td>
+                <td>2</td><td>2</td><td>2</td><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td>
+                <td class="text-center">0</td>
+                <td class="text-center">8</td>
+                <td class="text-right">22.000</td>
+                <td class="text-right">176.000</td>
+            </tr>
+
+            <tr class="bg-grey"><td colspan="16" class="text-left">ALKES / BHP</td></tr>
+            <tr>
+                <td class="text-center">1</td>
+                <td class="text-left">Spuit 10 mL</td>
+                <td>1</td><td>2</td><td>2</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td>
+                <td class="text-center">0</td>
+                <td class="text-center">6</td>
+                <td class="text-right">2.500</td>
+                <td class="text-right">15.000</td>
+            </tr>
+            <tr>
+                <td class="text-center">2</td>
+                <td class="text-left">Infuset Dewasa</td>
+                <td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                <td class="text-center">0</td>
+                <td class="text-center">1</td>
+                <td class="text-right">12.500</td>
+                <td class="text-right">12.500</td>
+            </tr>
+            <tr>
+                <td class="text-center">3</td>
+                <td class="text-left">IV Catheter 20G</td>
+                <td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                <td class="text-center">0</td>
+                <td class="text-center">1</td>
+                <td class="text-right">14.000</td>
+                <td class="text-right">14.000</td>
+            </tr>
+        </tbody>
+        
+        <tfoot>
+            <tr>
+                <td colspan="2" rowspan="2" class="text-center" style="vertical-align: top; padding-top: 10px;">
+                    Tanda Terima<br><br><br>
+                    ( Pasien / Keluarga / Perawat )<br>
+                    <small>*) Coret yang tidak perlu</small>
+                </td>
+                <td class="col-tgl"></td><td class="col-tgl"></td><td class="col-tgl"></td><td class="col-tgl"></td>
+                <td class="col-tgl"></td><td class="col-tgl"></td><td class="col-tgl"></td><td class="col-tgl"></td>
+                <td class="col-tgl"></td><td class="col-tgl"></td>
+                <td colspan="3" class="bg-grey text-right">TOTAL BIAYA :</td>
+                <td class="text-right font-weight-bold" style="font-size: 11px;">426.500</td>
+            </tr>
+            <tr>
+                <td colspan="10" class="text-center" style="font-size: 8px; height: 30px;">
+                    Catatan Pemberian Obat Rawat Inap
+                </td>
+                <td colspan="4" class="bg-grey"></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+</body>
+</html>
