@@ -8,7 +8,7 @@
     Flow: index.html (cari & pilih pasien) → halaman ini?patientId=X
     Fitur:
     - Menerima parameter ?patientId=X dari halaman pencarian
-    - Panel tanggal perawatan (kiri) + tabel obat & BHP (kanan)
+    - Panel Tanggal Permintaan Resep (kiri) + tabel obat & BHP (kanan)
     - Cetak CPOR format matriks landscape
 -->
 <html lang="id">
@@ -227,7 +227,7 @@
             <div class="col-md-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <strong><i class="fa fa-calendar"></i> Tanggal Perawatan</strong>
+                        <strong><i class="fa fa-calendar"></i> Tanggal Permintaan Resep</strong>
                     </div>
                     <div class="panel-body" style="padding: 0;">
                         <table class="table table-hover" id="tabel-tanggal">
@@ -656,6 +656,10 @@
             var parts = dateStr.split('-');
             return parts[2] + '/' + parts[1] + '/' + parts[0];
         }
+        function formatTanggalPendek(dateStr) {
+            var parts = dateStr.split('-');
+            return parts[2] + '/' + parts[1];
+        }
         function formatRupiah(num) {
             return num.toLocaleString('id-ID');
         }
@@ -826,7 +830,10 @@
             html += '<table class="table-cpor"><thead>';
             html += '<tr class="bg-grey"><th class="col-no" rowspan="2">NO</th><th class="col-nama" rowspan="2">NAMA PERBEKALAN FARMASI</th><th colspan="' + maxDays + '">TANGGAL RAWAT (QTY)</th><th class="col-sm" rowspan="2">RET</th><th class="col-sm" rowspan="2">JML</th><th class="col-price" rowspan="2">Harga Satuan</th><th class="col-price" rowspan="2">Total Harga</th></tr>';
             html += '<tr class="bg-grey text-center">';
-            for (var d = 1; d <= maxDays; d++) html += '<td class="col-tgl">' + d + '</td>';
+            for (var d = 0; d < maxDays; d++) {
+                var label = (d < dates.length) ? formatTanggalPendek(dates[d]) : '';
+                html += '<td class="col-tgl">' + label + '</td>';
+            }
             html += '</tr></thead><tbody>';
 
             // OBAT section
