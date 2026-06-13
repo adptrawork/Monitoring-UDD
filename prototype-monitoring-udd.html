@@ -169,6 +169,17 @@
             margin: 15px 0 10px 0;
         }
 
+        /* ===== Row sesi grouping ===== */
+        .row-sesi {
+            background-color: #e8f4f8 !important;
+            font-weight: bold;
+        }
+        .row-sesi td {
+            padding: 5px 10px !important;
+            font-size: 13px;
+            border-top: 2px solid #5bc0de !important;
+        }
+
         @media (max-width: 992px) {
 
             .col-md-3,
@@ -256,12 +267,8 @@
                             <thead>
                                 <tr>
                                     <th style="width:30px;">No</th>
-                                    <th>No. Resep</th>
-                                    <th>Nama Obat</th>
+                                    <th>Daftar Obat</th>
                                     <th style="width:50px;">Qty</th>
-                                    <th style="width:60px;">Return</th>
-                                    <th style="width:90px;">Status</th>
-                                    <th style="width:100px;">Harga</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -280,12 +287,8 @@
                             <thead>
                                 <tr>
                                     <th style="width:30px;">No</th>
-                                    <th>No. Resep</th>
-                                    <th>Nama BHP / Alkes</th>
+                                    <th>Daftar BHP / Alkes</th>
                                     <th style="width:50px;">Qty</th>
-                                    <th style="width:60px;">Return</th>
-                                    <th style="width:90px;">Status</th>
-                                    <th style="width:100px;">Harga</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -349,20 +352,88 @@
                 dates: ['2026-03-11', '2026-03-12', '2026-03-13', '2026-03-14'],
                 data: {
                     '2026-03-11': {
-                        obat: [{ no: 1, resep: 'R110326-001', nama: 'Ketorolac Inj 30', qty: 3, ret: 0, status: 'Diberikan', harga: '15.000' }, { no: 2, resep: 'R110326-002', nama: 'Omeprazole Inj 40 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '18.500' }, { no: 3, resep: 'R110326-003', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' }, { no: 4, resep: 'R110326-004', nama: 'Ranitidine Inj 50 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '12.000' }],
-                        bhp: [{ no: 1, resep: 'B110326-001', nama: 'Spuit 10 mL', qty: 1, ret: 0, status: 'Digunakan', harga: '2.500' }, { no: 2, resep: 'B110326-002', nama: 'Infuset Dewasa', qty: 1, ret: 0, status: 'Digunakan', harga: '12.500' }, { no: 3, resep: 'B110326-003', nama: 'IV Catheter 20G', qty: 1, ret: 0, status: 'Digunakan', harga: '14.000' }]
+                        obat: [
+                            { no: 1, resep: 'R110326-001', nama: 'Ketorolac Inj 30', qty: 3, ret: 0, status: 'Diberikan', harga: '15.000' },
+                            { no: 2, resep: 'R110326-002', nama: 'Omeprazole Inj 40 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '18.500' },
+                            { no: 3, resep: 'R110326-003', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' },
+                            { no: 4, resep: 'R110326-004', nama: 'Ranitidine Inj 50 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '12.000' },
+                            { no: 5, resep: 'R110326-005', nama: 'Metoclopramide Inj 10 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '7.000' },
+                            { no: 6, resep: 'R110326-006', nama: 'Sucralfate Syrup 1 btl', qty: 1, ret: 0, status: 'Diberikan', harga: '9.500' },
+                            { no: 7, resep: 'R110326-007', nama: 'Amlodipine Tab 10 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '2.500' },
+                            { no: 8, resep: 'R110326-008', nama: 'Captopril Tab 25 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '600' },
+                            { no: 9, resep: 'R110326-009', nama: 'Antasida Syrup 1 btl', qty: 1, ret: 0, status: 'Diberikan', harga: '5.000' }
+                        ],
+                        bhp: [
+                            { no: 1, resep: 'B110326-001', nama: 'Spuit 10 mL', qty: 1, ret: 0, status: 'Digunakan', harga: '2.500' },
+                            { no: 2, resep: 'B110326-002', nama: 'Infuset Dewasa', qty: 1, ret: 0, status: 'Digunakan', harga: '12.500' },
+                            { no: 3, resep: 'B110326-003', nama: 'IV Catheter 20G', qty: 1, ret: 0, status: 'Digunakan', harga: '14.000' },
+                            { no: 4, resep: 'B110326-004', nama: 'Alkohol Swab', qty: 4, ret: 0, status: 'Digunakan', harga: '500' },
+                            { no: 5, resep: 'B110326-005', nama: 'Kassa Steril', qty: 3, ret: 0, status: 'Digunakan', harga: '1.500' },
+                            { no: 6, resep: 'B110326-006', nama: 'Handscoen Steril Size M', qty: 2, ret: 0, status: 'Digunakan', harga: '3.500' }
+                        ]
                     },
                     '2026-03-12': {
-                        obat: [{ no: 1, resep: 'R120326-001', nama: 'Ketorolac Inj 30', qty: 2, ret: 0, status: 'Diberikan', harga: '15.000' }, { no: 2, resep: 'R120326-002', nama: 'Omeprazole Inj 40 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '18.500' }, { no: 3, resep: 'R120326-003', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' }, { no: 4, resep: 'R120326-004', nama: 'Furosemide Inj 20 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '8.500' }],
-                        bhp: [{ no: 1, resep: 'B120326-001', nama: 'Spuit 10 mL', qty: 2, ret: 0, status: 'Digunakan', harga: '2.500' }, { no: 2, resep: 'B120326-002', nama: 'Kassa Steril', qty: 4, ret: 0, status: 'Digunakan', harga: '1.500' }, { no: 3, resep: 'B120326-003', nama: 'Alkohol Swab', qty: 3, ret: 0, status: 'Digunakan', harga: '500' }]
+                        obat: [
+                            { no: 1, resep: 'R120326-001', nama: 'Ketorolac Inj 30', qty: 2, ret: 0, status: 'Diberikan', harga: '15.000' },
+                            { no: 2, resep: 'R120326-002', nama: 'Omeprazole Inj 40 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '18.500' },
+                            { no: 3, resep: 'R120326-003', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' },
+                            { no: 4, resep: 'R120326-004', nama: 'Furosemide Inj 20 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '8.500' },
+                            { no: 5, resep: 'R120326-005', nama: 'Ranitidine Inj 50 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '12.000' },
+                            { no: 6, resep: 'R120326-006', nama: 'Amlodipine Tab 10 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '2.500' },
+                            { no: 7, resep: 'R120326-007', nama: 'Captopril Tab 25 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '600' },
+                            { no: 8, resep: 'R120326-008', nama: 'Bisoprolol Tab 5 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '4.500' },
+                            { no: 9, resep: 'R120326-009', nama: 'Sucralfate Syrup 1 btl', qty: 1, ret: 0, status: 'Diberikan', harga: '9.500' }
+                        ],
+                        bhp: [
+                            { no: 1, resep: 'B120326-001', nama: 'Spuit 10 mL', qty: 2, ret: 0, status: 'Digunakan', harga: '2.500' },
+                            { no: 2, resep: 'B120326-002', nama: 'Infuset Dewasa', qty: 1, ret: 0, status: 'Digunakan', harga: '12.500' },
+                            { no: 3, resep: 'B120326-003', nama: 'Kassa Steril', qty: 4, ret: 0, status: 'Digunakan', harga: '1.500' },
+                            { no: 4, resep: 'B120326-004', nama: 'Alkohol Swab', qty: 3, ret: 0, status: 'Digunakan', harga: '500' },
+                            { no: 5, resep: 'B120326-005', nama: 'Plester 2 cm', qty: 1, ret: 0, status: 'Digunakan', harga: '1.000' },
+                            { no: 6, resep: 'B120326-006', nama: 'Handscoen Steril Size M', qty: 1, ret: 0, status: 'Digunakan', harga: '3.500' }
+                        ]
                     },
                     '2026-03-13': {
-                        obat: [{ no: 1, resep: 'R130326-001', nama: 'Ketorolac Inj 30', qty: 3, ret: 0, status: 'Diberikan', harga: '15.000' }, { no: 2, resep: 'R130326-002', nama: 'Omeprazole Inj 40 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '18.500' }, { no: 3, resep: 'R130326-003', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' }, { no: 4, resep: 'R130326-004', nama: 'Paracetamol Infus 1 gr', qty: 3, ret: 0, status: 'Diberikan', harga: '11.000' }],
-                        bhp: [{ no: 1, resep: 'B130326-001', nama: 'Spuit 10 mL', qty: 2, ret: 0, status: 'Digunakan', harga: '2.500' }, { no: 2, resep: 'B130326-002', nama: 'Handscoen Steril', qty: 2, ret: 0, status: 'Digunakan', harga: '3.500' }]
+                        obat: [
+                            { no: 1, resep: 'R130326-001', nama: 'Ketorolac Inj 30', qty: 3, ret: 0, status: 'Diberikan', harga: '15.000' },
+                            { no: 2, resep: 'R130326-002', nama: 'Omeprazole Inj 40 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '18.500' },
+                            { no: 3, resep: 'R130326-003', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' },
+                            { no: 4, resep: 'R130326-004', nama: 'Paracetamol Infus 1 gr', qty: 3, ret: 0, status: 'Diberikan', harga: '11.000' },
+                            { no: 5, resep: 'R130326-005', nama: 'Ranitidine Inj 50 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '12.000' },
+                            { no: 6, resep: 'R130326-006', nama: 'Furosemide Inj 20 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '8.500' },
+                            { no: 7, resep: 'R130326-007', nama: 'Metoclopramide Inj 10 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '7.000' },
+                            { no: 8, resep: 'R130326-008', nama: 'Amlodipine Tab 10 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '2.500' },
+                            { no: 9, resep: 'R130326-009', nama: 'Antasida Syrup 1 btl', qty: 1, ret: 0, status: 'Diberikan', harga: '5.000' }
+                        ],
+                        bhp: [
+                            { no: 1, resep: 'B130326-001', nama: 'Spuit 10 mL', qty: 2, ret: 0, status: 'Digunakan', harga: '2.500' },
+                            { no: 2, resep: 'B130326-002', nama: 'Infuset Dewasa', qty: 1, ret: 0, status: 'Digunakan', harga: '12.500' },
+                            { no: 3, resep: 'B130326-003', nama: 'Handscoen Steril Size M', qty: 2, ret: 0, status: 'Digunakan', harga: '3.500' },
+                            { no: 4, resep: 'B130326-004', nama: 'Kassa Steril', qty: 2, ret: 0, status: 'Digunakan', harga: '1.500' },
+                            { no: 5, resep: 'B130326-005', nama: 'Alkohol Swab', qty: 4, ret: 0, status: 'Digunakan', harga: '500' },
+                            { no: 6, resep: 'B130326-006', nama: 'Plester 2 cm', qty: 1, ret: 0, status: 'Digunakan', harga: '1.000' }
+                        ]
                     },
                     '2026-03-14': {
-                        obat: [{ no: 1, resep: 'R140326-001', nama: 'Ketorolac Inj 30', qty: 1, ret: 0, status: 'Diberikan', harga: '15.000' }, { no: 2, resep: 'R140326-002', nama: 'Omeprazole Inj 40 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '18.500' }, { no: 3, resep: 'R140326-003', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' }, { no: 4, resep: 'R140326-004', nama: 'Ondansetron Inj 4 mg', qty: 2, ret: 1, status: 'Diberikan', harga: '14.000' }],
-                        bhp: [{ no: 1, resep: 'B140326-001', nama: 'Spuit 10 mL', qty: 1, ret: 0, status: 'Digunakan', harga: '2.500' }, { no: 2, resep: 'B140326-002', nama: 'Plester 2 cm', qty: 1, ret: 0, status: 'Digunakan', harga: '1.000' }]
+                        obat: [
+                            { no: 1, resep: 'R140326-001', nama: 'Ketorolac Inj 30', qty: 1, ret: 0, status: 'Diberikan', harga: '15.000' },
+                            { no: 2, resep: 'R140326-002', nama: 'Omeprazole Inj 40 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '18.500' },
+                            { no: 3, resep: 'R140326-003', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' },
+                            { no: 4, resep: 'R140326-004', nama: 'Ondansetron Inj 4 mg', qty: 2, ret: 1, status: 'Diberikan', harga: '14.000' },
+                            { no: 5, resep: 'R140326-005', nama: 'Ranitidine Inj 50 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '12.000' },
+                            { no: 6, resep: 'R140326-006', nama: 'Furosemide Inj 20 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '8.500' },
+                            { no: 7, resep: 'R140326-007', nama: 'Sucralfate Syrup 1 btl', qty: 1, ret: 0, status: 'Diberikan', harga: '9.500' },
+                            { no: 8, resep: 'R140326-008', nama: 'Captopril Tab 25 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '600' },
+                            { no: 9, resep: 'R140326-009', nama: 'Antasida Syrup 1 btl', qty: 1, ret: 0, status: 'Diberikan', harga: '5.000' }
+                        ],
+                        bhp: [
+                            { no: 1, resep: 'B140326-001', nama: 'Spuit 10 mL', qty: 1, ret: 0, status: 'Digunakan', harga: '2.500' },
+                            { no: 2, resep: 'B140326-002', nama: 'Infuset Dewasa', qty: 1, ret: 0, status: 'Digunakan', harga: '12.500' },
+                            { no: 3, resep: 'B140326-003', nama: 'Kassa Steril', qty: 2, ret: 0, status: 'Digunakan', harga: '1.500' },
+                            { no: 4, resep: 'B140326-004', nama: 'Alkohol Swab', qty: 2, ret: 0, status: 'Digunakan', harga: '500' },
+                            { no: 5, resep: 'B140326-005', nama: 'Plester 2 cm', qty: 1, ret: 0, status: 'Digunakan', harga: '1.000' },
+                            { no: 6, resep: 'B140326-006', nama: 'Handscoen Steril Size M', qty: 1, ret: 0, status: 'Digunakan', harga: '3.500' }
+                        ]
                     }
                 }
             },
@@ -663,26 +734,57 @@
         function formatRupiah(num) {
             return num.toLocaleString('id-ID');
         }
+        function getSessionByIndex(idx) {
+            return ['PAGI', 'SIANG', 'MALAM'][idx % 3];
+        }
 
         // ======================================================================
         // INISIALISASI DATATABLES
         // ======================================================================
         var tabelObat = $('#tabel-obat').DataTable({
-            paging: true, pageLength: 5, searching: false, info: false,
+            paging: false, searching: false, info: false,
             language: { emptyTable: 'Tidak ada resep obat pada tanggal ini', zeroRecords: 'Tidak ditemukan' },
             columns: [
-                { data: 'no' }, { data: 'resep' }, { data: 'nama' },
-                { data: 'qty' }, { data: 'ret' }, { data: 'status' }, { data: 'harga' }
-            ]
+                { data: 'no' },
+                { data: 'nama' },
+                { data: 'qty' }
+            ],
+            drawCallback: function () {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+                api.rows({ page: 'current' }).data().each(function (item, i) {
+                    if (last !== item.waktu) {
+                        $(rows).eq(i).before(
+                            '<tr class="row-sesi"><td colspan="3"><strong>' + item.waktu + '</strong></td></tr>'
+                        );
+                        last = item.waktu;
+                    }
+                });
+            }
         });
 
         var tabelBhp = $('#tabel-bhp').DataTable({
-            paging: true, pageLength: 5, searching: false, info: false,
+            paging: false, searching: false, info: false,
             language: { emptyTable: 'Tidak ada BHP/Alkes pada tanggal ini', zeroRecords: 'Tidak ditemukan' },
             columns: [
-                { data: 'no' }, { data: 'resep' }, { data: 'nama' },
-                { data: 'qty' }, { data: 'ret' }, { data: 'status' }, { data: 'harga' }
-            ]
+                { data: 'no' },
+                { data: 'nama' },
+                { data: 'qty' }
+            ],
+            drawCallback: function () {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+                api.rows({ page: 'current' }).data().each(function (item, i) {
+                    if (last !== item.waktu) {
+                        $(rows).eq(i).before(
+                            '<tr class="row-sesi"><td colspan="3"><strong>' + item.waktu + '</strong></td></tr>'
+                        );
+                        last = item.waktu;
+                    }
+                });
+            }
         });
 
         // ======================================================================
@@ -736,11 +838,37 @@
             $('#label-tanggal-obat, #label-tanggal-bhp').text(formatted);
         }
 
-        // Load data for a specific date
+        // Load data for a specific date — grouped by session with continuous numbering
         function loadDataForTanggal(tanggalKey) {
             var pdata = selectedPatient.data[tanggalKey] || { obat: [], bhp: [] };
-            tabelObat.clear().rows.add(pdata.obat).draw();
-            tabelBhp.clear().rows.add(pdata.bhp).draw();
+            var sesiOrder = ['PAGI', 'SIANG', 'MALAM'];
+
+            function flattenBySession(items) {
+                var groups = {};
+                items.forEach(function (item, idx) {
+                    var s = getSessionByIndex(idx);
+                    if (!groups[s]) groups[s] = [];
+                    groups[s].push({ no: item.no, nama: item.nama, qty: item.qty, waktu: s });
+                });
+                var result = [];
+                var no = 1;
+                sesiOrder.forEach(function (s) {
+                    (groups[s] || []).forEach(function (item) {
+                        result.push({ no: no++, nama: item.nama, qty: item.qty, waktu: item.waktu });
+                    });
+                });
+                return { data: result, groups: groups };
+            }
+
+            var obatResult = flattenBySession(pdata.obat);
+            var bhpResult = flattenBySession(pdata.bhp);
+
+            // Store group info for drawCallback
+            window.currentObatGroups = obatResult.groups;
+            window.currentBhpGroups = bhpResult.groups;
+
+            tabelObat.clear().rows.add(obatResult.data).draw();
+            tabelBhp.clear().rows.add(bhpResult.data).draw();
         }
 
         // ======================================================================
@@ -781,6 +909,7 @@
             html += '.text-center { text-align: center !important; }';
             html += '.text-right { text-align: right !important; padding-right: 8px !important; }';
             html += '.col-no { width: 30px; } .col-nama { width: 220px; } .col-tgl { width: 35px; }';
+            html += '.col-sesi { width: 12px; font-size: 8px; padding: 2px 0 !important; text-align: center; }';
             html += '.col-sm { width: 45px; } .col-price { width: 85px; }';
             html += '.header-val { font-weight: bold; text-transform: uppercase; }';
             html += '@media print { .btn-print { display: none; } .paper { margin: 0; padding: 0; } }';
@@ -799,17 +928,21 @@
             html += '<td class="text-left" style="width:28%;">Dokter : <br>' + p.dokter.split('<br>').map(function (d, i) { return (i + 1) + '. <span class="header-val">' + d.trim() + '</span>'; }).join('<br>') + '</td>';
             html += '</tr></table>';
 
-            // Build matrix data
+            // Build matrix data with session grouping
             var obatMap = {}, bhpMap = {};
             dates.forEach(function (tgl) {
                 var dd = p.data[tgl] || { obat: [], bhp: [] };
-                dd.obat.forEach(function (o) {
-                    if (!obatMap[o.nama]) obatMap[o.nama] = { nama: o.nama, harga: o.harga, qtyPerDay: {} };
-                    obatMap[o.nama].qtyPerDay[tgl] = o.qty;
+                dd.obat.forEach(function (o, idx) {
+                    var sesi = getSessionByIndex(idx);
+                    var key = o.nama + '_' + sesi;
+                    if (!obatMap[key]) obatMap[key] = { nama: o.nama, harga: o.harga, sesi: sesi, qtyPerDay: {} };
+                    obatMap[key].qtyPerDay[tgl] = o.qty;
                 });
-                dd.bhp.forEach(function (b) {
-                    if (!bhpMap[b.nama]) bhpMap[b.nama] = { nama: b.nama, harga: b.harga, qtyPerDay: {} };
-                    bhpMap[b.nama].qtyPerDay[tgl] = b.qty;
+                dd.bhp.forEach(function (b, idx) {
+                    var sesi = getSessionByIndex(idx);
+                    var key = b.nama + '_' + sesi;
+                    if (!bhpMap[key]) bhpMap[key] = { nama: b.nama, harga: b.harga, sesi: sesi, qtyPerDay: {} };
+                    bhpMap[key].qtyPerDay[tgl] = b.qty;
                 });
             });
             var obatRows = Object.values(obatMap);
@@ -826,30 +959,35 @@
             }
             var totalBiaya = calcTotal(obatRows) + calcTotal(bhpRows);
 
-            // Matrix table header
+            // Matrix table header with P|S|M sub-columns
             html += '<table class="table-cpor"><thead>';
-            html += '<tr class="bg-grey"><th class="col-no" rowspan="2">NO</th><th class="col-nama" rowspan="2">NAMA PERBEKALAN FARMASI</th><th colspan="' + maxDays + '">TANGGAL RAWAT (QTY)</th><th class="col-sm" rowspan="2">RET</th><th class="col-sm" rowspan="2">JML</th><th class="col-price" rowspan="2">Harga Satuan</th><th class="col-price" rowspan="2">Total Harga</th></tr>';
+            html += '<tr class="bg-grey"><th class="col-no" rowspan="3">NO</th><th class="col-nama" rowspan="3">NAMA PERBEKALAN FARMASI</th><th colspan="' + (maxDays * 3) + '">TANGGAL RAWAT (QTY)</th><th class="col-sm" rowspan="3">RET</th><th class="col-sm" rowspan="3">JML</th><th class="col-price" rowspan="3">Harga Satuan</th><th class="col-price" rowspan="3">Total Harga</th></tr>';
             html += '<tr class="bg-grey text-center">';
             for (var d = 0; d < maxDays; d++) {
                 var label = (d < dates.length) ? formatTanggalPendek(dates[d]) : '';
-                html += '<td class="col-tgl">' + label + '</td>';
+                html += '<td colspan="3" class="col-tgl">' + label + '</td>';
+            }
+            html += '</tr>';
+            html += '<tr class="bg-grey text-center">';
+            for (var d = 0; d < maxDays; d++) {
+                html += '<td class="col-sesi">P</td><td class="col-sesi">S</td><td class="col-sesi">M</td>';
             }
             html += '</tr></thead><tbody>';
 
             // OBAT section
-            html += '<tr class="bg-grey"><td colspan="' + (maxDays + 5) + '" class="text-left">OBAT</td></tr>';
+            html += '<tr class="bg-grey"><td colspan="' + (maxDays * 3 + 6) + '" class="text-left">OBAT</td></tr>';
             html += buildMatrixRows(obatRows, dates, maxDays, 1);
 
             // BHP section
-            html += '<tr class="bg-grey"><td colspan="' + (maxDays + 5) + '" class="text-left">ALKES / BHP</td></tr>';
+            html += '<tr class="bg-grey"><td colspan="' + (maxDays * 3 + 6) + '" class="text-left">ALKES / BHP</td></tr>';
             html += buildMatrixRows(bhpRows, dates, maxDays, obatRows.length + 1);
 
             html += '</tbody><tfoot><tr>';
             html += '<td colspan="2" rowspan="2" class="text-center" style="vertical-align:top;padding-top:10px;">Tanda Terima<br><br><br>( Pasien / Keluarga / Perawat )<br><small>*) Coret yang tidak perlu</small></td>';
-            for (var f = 1; f <= maxDays; f++) html += '<td class="col-tgl"></td>';
+            for (var f = 1; f <= maxDays * 3; f++) html += '<td class="col-sesi"></td>';
             html += '<td colspan="3" class="bg-grey text-right">TOTAL BIAYA :</td>';
             html += '<td class="text-right font-weight-bold" style="font-size:11px;">' + formatRupiah(totalBiaya) + '</td>';
-            html += '</tr><tr><td colspan="' + maxDays + '" class="text-center" style="font-size:8px;height:30px;">Catatan Pemberian Obat Rawat Inap</td><td colspan="4" class="bg-grey"></td></tr></tfoot>';
+            html += '</tr><tr><td colspan="' + (maxDays * 3) + '" class="text-center" style="font-size:8px;height:30px;">Catatan Pemberian Obat Rawat Inap</td><td colspan="4" class="bg-grey"></td></tr></tfoot>';
             html += '</table></div></body></html>';
 
             var w = window.open('', '_blank', 'width=1200,height=800');
@@ -862,7 +1000,14 @@
 
         function buildMatrixRows(items, dates, maxDays, startNo) {
             var html = '', no = startNo;
+            var sesiOrder = { PAGI: 0, SIANG: 1, MALAM: 2 };
+            items.sort(function (a, b) { return (sesiOrder[a.sesi] || 99) - (sesiOrder[b.sesi] || 99); });
+            var lastSesi = null;
             items.forEach(function (item) {
+                if (lastSesi !== item.sesi) {
+                    html += '<tr class="bg-grey"><td colspan="' + (maxDays * 3 + 6) + '" class="text-left">SESI <strong>' + item.sesi + '</strong></td></tr>';
+                    lastSesi = item.sesi;
+                }
                 var jml = 0;
                 html += '<tr>';
                 html += '<td class="text-center">' + (no++) + '</td>';
@@ -870,7 +1015,13 @@
                 for (var d = 0; d < maxDays; d++) {
                     var qty = (d < dates.length) ? (item.qtyPerDay[dates[d]] || '') : '';
                     if (qty !== '') jml += qty;
-                    html += '<td>' + (qty !== '' ? qty : '') + '</td>';
+                    for (var s = 0; s < 3; s++) {
+                        if (s === sesiOrder[item.sesi]) {
+                            html += '<td class="text-center">' + (qty !== '' ? qty : '') + '</td>';
+                        } else {
+                            html += '<td class="text-center"></td>';
+                        }
+                    }
                 }
                 html += '<td class="text-center">0</td>';
                 html += '<td class="text-center">' + jml + '</td>';
