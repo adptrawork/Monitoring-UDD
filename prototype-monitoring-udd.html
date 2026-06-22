@@ -19,7 +19,6 @@
     <title>Monitoring UDD — Prototype</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
@@ -318,8 +317,6 @@
     <!-- ================================================================ -->
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap.min.js"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script
@@ -349,7 +346,6 @@
                 dokter: 'dr. Budi Santoso, Sp.PD',
                 status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0001',
                 statusBayar: 'BPJS',
-                dates: ['2026-03-11', '2026-03-12', '2026-03-13', '2026-03-14'],
                 data: {
                     '2026-03-11': {
                         obat: [
@@ -445,7 +441,6 @@
                 dokter: 'dr. Dewi Lestari, Sp.B',
                 status: 'Sudah Pulang', penjamin: 'UMUM', noReg: 'REG-2026-0015',
                 statusBayar: 'Lunas',
-                dates: ['2026-03-24', '2026-03-25', '2026-03-26', '2026-03-27', '2026-03-28'],
                 data: {
                     '2026-03-24': {
                         obat: [{ no: 1, resep: 'R240326-001', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' }, { no: 2, resep: 'R240326-002', nama: 'Metronidazole Infus 500 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '16.000' }, { no: 3, resep: 'R240326-003', nama: 'Ketorolac Inj 30', qty: 2, ret: 0, status: 'Diberikan', harga: '15.000' }],
@@ -477,7 +472,6 @@
                 dokter: 'dr. Ratna Dewi, Sp.A',
                 status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0024',
                 statusBayar: 'BPJS',
-                dates: ['2026-04-01', '2026-04-02', '2026-04-03', '2026-04-04', '2026-04-05'],
                 data: {
                     '2026-04-01': {
                         obat: [{ no: 1, resep: 'R010426-001', nama: 'Paracetamol Infus 500 mg', qty: 3, ret: 0, status: 'Diberikan', harga: '8.000' }, { no: 2, resep: 'R010426-002', nama: 'Ondansetron Inj 2 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '12.000' }, { no: 3, resep: 'R010426-003', nama: 'RL Infus 500 mL', qty: 2, ret: 0, status: 'Diberikan', harga: '14.000' }],
@@ -509,7 +503,6 @@
                 dokter: 'dr. Hendra Wijaya, Sp.PD',
                 status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0031',
                 statusBayar: 'BPJS',
-                dates: ['2026-04-05', '2026-04-06', '2026-04-07'],
                 data: {
                     '2026-04-05': {
                         obat: [{ no: 1, resep: 'R050426-001', nama: 'Insulin Novorapid Inj 100 IU', qty: 3, ret: 0, status: 'Diberikan', harga: '45.000' }, { no: 2, resep: 'R050426-002', nama: 'Gabapentin Cap 300 mg', qty: 3, ret: 0, status: 'Diberikan', harga: '6.500' }, { no: 3, resep: 'R050426-003', nama: 'Metformin Tab 500 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '800' }],
@@ -533,7 +526,6 @@
                 dokter: 'dr. Budi Santoso, Sp.PD<br>dr. Anton Hermawan, Sp.JP',
                 status: 'Masih Dirawat', penjamin: 'UMUM', noReg: 'REG-2026-0042',
                 statusBayar: 'Belum Lunas',
-                dates: ['2026-04-10', '2026-04-11', '2026-04-12'],
                 data: {
                     '2026-04-10': {
                         obat: [{ no: 1, resep: 'R100426-001', nama: 'Furosemide Inj 40 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '8.500' }, { no: 2, resep: 'R100426-002', nama: 'Captopril Tab 25 mg', qty: 3, ret: 0, status: 'Diberikan', harga: '600' }, { no: 3, resep: 'R100426-003', nama: 'Bisoprolol Tab 5 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '4.500' }, { no: 4, resep: 'R100426-004', nama: 'ISDN Tab 5 mg', qty: 3, ret: 0, status: 'Diberikan', harga: '1.200' }],
@@ -557,7 +549,6 @@
                 dokter: 'dr. Dewi Lestari, Sp.B<br>dr. Rudi Hartono, Sp.OT',
                 status: 'Masih Dirawat', penjamin: 'BPJS Ketenagakerjaan', noReg: 'REG-2026-0051',
                 statusBayar: 'BPJS',
-                dates: ['2026-04-15', '2026-04-16', '2026-04-17'],
                 data: {
                     '2026-04-15': {
                         obat: [{ no: 1, resep: 'R150426-001', nama: 'Ketorolac Inj 30', qty: 3, ret: 0, status: 'Diberikan', harga: '15.000' }, { no: 2, resep: 'R150426-002', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' }, { no: 3, resep: 'R150426-003', nama: 'Tramadol Inj 100 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '25.000' }, { no: 4, resep: 'R150426-004', nama: 'Ranitidine Inj 50 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '12.000' }],
@@ -581,7 +572,6 @@
                 dokter: 'dr. Siti Fatimah, Sp.OG',
                 status: 'Sudah Pulang', penjamin: 'BPJS', noReg: 'REG-2026-0063',
                 statusBayar: 'BPJS',
-                dates: ['2026-04-18', '2026-04-19', '2026-04-20', '2026-04-21', '2026-04-22'],
                 data: {
                     '2026-04-18': {
                         obat: [{ no: 1, resep: 'R180426-001', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' }, { no: 2, resep: 'R180426-002', nama: 'Ketorolac Inj 30', qty: 2, ret: 0, status: 'Diberikan', harga: '15.000' }, { no: 3, resep: 'R180426-003', nama: 'Oxytocin Inj 10 IU', qty: 2, ret: 0, status: 'Diberikan', harga: '9.500' }, { no: 4, resep: 'R180426-004', nama: 'Asam Tranexamat Inj 500 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '12.500' }],
@@ -605,7 +595,6 @@
                 dokter: 'dr. Indra Gunawan, Sp.S',
                 status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0078',
                 statusBayar: 'BPJS',
-                dates: ['2026-04-20', '2026-04-21', '2026-04-22'],
                 data: {
                     '2026-04-20': {
                         obat: [{ no: 1, resep: 'R200426-001', nama: 'Citicoline Inj 500 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '35.000' }, { no: 2, resep: 'R200426-002', nama: 'Amlodipine Tab 10 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '2.500' }, { no: 3, resep: 'R200426-003', nama: 'Clopidogrel Tab 75 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '7.500' }, { no: 4, resep: 'R200426-004', nama: 'Atorvastatin Tab 20 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '5.000' }],
@@ -629,7 +618,6 @@
                 dokter: 'dr. Ahmad Fauzi, Sp.P',
                 status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0085',
                 statusBayar: 'BPJS',
-                dates: ['2026-04-12', '2026-04-13', '2026-04-14'],
                 data: {
                     '2026-04-12': {
                         obat: [{ no: 1, resep: 'R120426-001', nama: 'Levofloxacin Infus 500 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '28.000' }, { no: 2, resep: 'R120426-002', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' }, { no: 3, resep: 'R120426-003', nama: 'Paracetamol Infus 1 gr', qty: 3, ret: 0, status: 'Diberikan', harga: '11.000' }, { no: 4, resep: 'R120426-004', nama: 'Codein Tab 10 mg', qty: 3, ret: 0, status: 'Diberikan', harga: '4.500' }],
@@ -653,7 +641,6 @@
                 dokter: 'dr. Hendra Wijaya, Sp.PD<br>dr. Maya Sari, Sp.GK',
                 status: 'Masih Dirawat', penjamin: 'BPJS', noReg: 'REG-2026-0092',
                 statusBayar: 'BPJS',
-                dates: ['2026-04-08', '2026-04-09', '2026-04-10'],
                 data: {
                     '2026-04-08': {
                         obat: [{ no: 1, resep: 'R080426-001', nama: 'Furosemide Inj 40 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '8.500' }, { no: 2, resep: 'R080426-002', nama: 'Amlodipine Tab 10 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '2.500' }, { no: 3, resep: 'R080426-003', nama: 'Epoetin Alfa Inj 4000 IU', qty: 1, ret: 0, status: 'Diberikan', harga: '125.000' }, { no: 4, resep: 'R080426-004', nama: 'SF Tab 500 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '3.200' }],
@@ -677,7 +664,6 @@
                 dokter: 'dr. Anton Hermawan, Sp.JP',
                 status: 'Masih Dirawat', penjamin: 'UMUM', noReg: 'REG-2026-0105',
                 statusBayar: 'Belum Lunas',
-                dates: ['2026-04-22', '2026-04-23'],
                 data: {
                     '2026-04-22': {
                         obat: [{ no: 1, resep: 'R220426-001', nama: 'Enoxaparin Inj 60 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '85.000' }, { no: 2, resep: 'R220426-002', nama: 'Aspirin Tab 100 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '500' }, { no: 3, resep: 'R220426-003', nama: 'Clopidogrel Tab 75 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '7.500' }, { no: 4, resep: 'R220426-004', nama: 'Atorvastatin Tab 40 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '8.500' }, { no: 5, resep: 'R220426-005', nama: 'Bisoprolol Tab 5 mg', qty: 1, ret: 0, status: 'Diberikan', harga: '4.500' }],
@@ -697,7 +683,6 @@
                 dokter: 'dr. Dewi Lestari, Sp.B',
                 status: 'Masih Dirawat', penjamin: 'UMUM', noReg: 'REG-2026-0112',
                 statusBayar: 'Belum Lunas',
-                dates: ['2026-04-21', '2026-04-22', '2026-04-23'],
                 data: {
                     '2026-04-21': {
                         obat: [{ no: 1, resep: 'R210426-001', nama: 'Ceftriaxone Inj 1 gr', qty: 2, ret: 0, status: 'Diberikan', harga: '22.000' }, { no: 2, resep: 'R210426-002', nama: 'Metronidazole Infus 500 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '16.000' }, { no: 3, resep: 'R210426-003', nama: 'Fentanyl Inj 0.1 mg', qty: 2, ret: 0, status: 'Diberikan', harga: '45.000' }, { no: 4, resep: 'R210426-004', nama: 'Ondansetron Inj 8 mg', qty: 3, ret: 0, status: 'Diberikan', harga: '16.500' }],
@@ -714,6 +699,21 @@
                 }
             }
         ];
+
+        // Programmatically add waktu (PAGI/SIANG/SORE/MALAM) to every item
+        patientDB.forEach(function (p) {
+            Object.keys(p.data).forEach(function (tgl) {
+                ['obat', 'bhp'].forEach(function (type) {
+                    var items = p.data[tgl][type];
+                    var sesiOrder = ['PAGI', 'SIANG', 'SORE', 'MALAM'];
+                    var perSesi = Math.ceil(items.length / 4);
+                    items.forEach(function (item, idx) {
+                        var sIdx = Math.min(Math.floor(idx / perSesi), 3);
+                        item.waktu = sesiOrder[sIdx];
+                    });
+                });
+            });
+        });
 
         // ======================================================================
         // GLOBAL STATE
@@ -734,58 +734,34 @@
         function formatRupiah(num) {
             return num.toLocaleString('id-ID');
         }
-        function getSessionByIndex(idx) {
-            return ['PAGI', 'SIANG', 'MALAM'][idx % 3];
+        function getDateRange(patient) {
+            var partsMasuk = patient.tglMasuk.split('/');
+            var tglAwal = new Date(partsMasuk[2], parseInt(partsMasuk[1]) - 1, parseInt(partsMasuk[0]));
+            var tglAkhir;
+            if (patient.tglKeluar !== '-') {
+                var partsKeluar = patient.tglKeluar.split('/');
+                tglAkhir = new Date(partsKeluar[2], parseInt(partsKeluar[1]) - 1, parseInt(partsKeluar[0]));
+            } else {
+                var today = new Date();
+                tglAkhir = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            }
+            var dates = [];
+            var cur = new Date(tglAwal);
+            while (cur <= tglAkhir) {
+                var y = cur.getFullYear();
+                var m = String(cur.getMonth() + 1).padStart(2, '0');
+                var d = String(cur.getDate()).padStart(2, '0');
+                dates.push(y + '-' + m + '-' + d);
+                cur.setDate(cur.getDate() + 1);
+            }
+            return dates;
         }
 
         // ======================================================================
-        // INISIALISASI DATATABLES
+        // TABLE REFERENCES (plain Bootstrap tables, no DataTables)
         // ======================================================================
-        var tabelObat = $('#tabel-obat').DataTable({
-            paging: false, searching: false, info: false,
-            language: { emptyTable: 'Tidak ada resep obat pada tanggal ini', zeroRecords: 'Tidak ditemukan' },
-            columns: [
-                { data: 'no' },
-                { data: 'nama' },
-                { data: 'qty' }
-            ],
-            drawCallback: function () {
-                var api = this.api();
-                var rows = api.rows({ page: 'current' }).nodes();
-                var last = null;
-                api.rows({ page: 'current' }).data().each(function (item, i) {
-                    if (last !== item.waktu) {
-                        $(rows).eq(i).before(
-                            '<tr class="row-sesi"><td colspan="3"><strong>' + item.waktu + '</strong></td></tr>'
-                        );
-                        last = item.waktu;
-                    }
-                });
-            }
-        });
-
-        var tabelBhp = $('#tabel-bhp').DataTable({
-            paging: false, searching: false, info: false,
-            language: { emptyTable: 'Tidak ada BHP/Alkes pada tanggal ini', zeroRecords: 'Tidak ditemukan' },
-            columns: [
-                { data: 'no' },
-                { data: 'nama' },
-                { data: 'qty' }
-            ],
-            drawCallback: function () {
-                var api = this.api();
-                var rows = api.rows({ page: 'current' }).nodes();
-                var last = null;
-                api.rows({ page: 'current' }).data().each(function (item, i) {
-                    if (last !== item.waktu) {
-                        $(rows).eq(i).before(
-                            '<tr class="row-sesi"><td colspan="3"><strong>' + item.waktu + '</strong></td></tr>'
-                        );
-                        last = item.waktu;
-                    }
-                });
-            }
-        });
+        var tabelObat = $('#tabel-obat');
+        var tabelBhp = $('#tabel-bhp');
 
         // ======================================================================
         // LOAD MONITORING DATA FOR SELECTED PATIENT
@@ -820,9 +796,12 @@
             $('#panel-info-pasien').html(html);
             $('#selected-patient-name').text(patient.nama);
 
-            // Build date table
+            // Compute date range dynamically
+            var dateRange = getDateRange(patient);
+
+            // Build date table — show ALL dates in range
             var tbodyHtml = '';
-            patient.dates.forEach(function (dateKey, idx) {
+            dateRange.forEach(function (dateKey, idx) {
                 var formatted = formatTanggal(dateKey);
                 var activeClass = idx === 0 ? ' class="active"' : '';
                 tbodyHtml += '<tr data-tanggal="' + dateKey + '"' + activeClass + '>';
@@ -832,43 +811,41 @@
             $('#tabel-tanggal tbody').html(tbodyHtml);
 
             // Load first date data
-            var firstDate = patient.dates[0];
+            var firstDate = dateRange[0];
             loadDataForTanggal(firstDate);
             var formatted = formatTanggal(firstDate);
             $('#label-tanggal-obat, #label-tanggal-bhp').text(formatted);
         }
 
-        // Load data for a specific date — grouped by session with continuous numbering
+        // Load data for a specific date — direct HTML, always shows 4 session headers
         function loadDataForTanggal(tanggalKey) {
             var pdata = selectedPatient.data[tanggalKey] || { obat: [], bhp: [] };
-            var sesiOrder = ['PAGI', 'SIANG', 'MALAM'];
+            var sesiOrder = ['PAGI', 'SIANG', 'SORE', 'MALAM'];
 
-            function flattenBySession(items) {
+            function buildTableHtml(items) {
+                // Group items by waktu
                 var groups = {};
-                items.forEach(function (item, idx) {
-                    var s = getSessionByIndex(idx);
+                items.forEach(function (item) {
+                    var s = item.waktu;
                     if (!groups[s]) groups[s] = [];
-                    groups[s].push({ no: item.no, nama: item.nama, qty: item.qty, waktu: s });
+                    groups[s].push(item);
                 });
-                var result = [];
+                // Build HTML with session headers + data rows
+                var html = '';
                 var no = 1;
                 sesiOrder.forEach(function (s) {
+                    html += '<tr class="row-sesi"><td colspan="3"><strong>' + s + '</strong></td></tr>';
                     (groups[s] || []).forEach(function (item) {
-                        result.push({ no: no++, nama: item.nama, qty: item.qty, waktu: item.waktu });
+                        html += '<tr><td class="text-center">' + (no++) + '</td>';
+                        html += '<td>' + item.nama + '</td>';
+                        html += '<td class="text-center">' + item.qty + '</td></tr>';
                     });
                 });
-                return { data: result, groups: groups };
+                return html;
             }
 
-            var obatResult = flattenBySession(pdata.obat);
-            var bhpResult = flattenBySession(pdata.bhp);
-
-            // Store group info for drawCallback
-            window.currentObatGroups = obatResult.groups;
-            window.currentBhpGroups = bhpResult.groups;
-
-            tabelObat.clear().rows.add(obatResult.data).draw();
-            tabelBhp.clear().rows.add(bhpResult.data).draw();
+            tabelObat.find('tbody').html(buildTableHtml(pdata.obat));
+            tabelBhp.find('tbody').html(buildTableHtml(pdata.bhp));
         }
 
         // ======================================================================
@@ -892,8 +869,8 @@
         // ======================================================================
         function cetakCPOR() {
             var p = selectedPatient;
-            var dates = p.dates;
-            var maxDays = 10;
+            var dates = getDateRange(p);
+            var maxDays = dates.length;
 
             var html = '';
             html += '<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Cetak CPOR - ' + p.nama + '</title>';
@@ -928,20 +905,18 @@
             html += '<td class="text-left" style="width:28%;">Dokter : <br>' + p.dokter.split('<br>').map(function (d, i) { return (i + 1) + '. <span class="header-val">' + d.trim() + '</span>'; }).join('<br>') + '</td>';
             html += '</tr></table>';
 
-            // Build matrix data with session grouping
+            // Build matrix data — use item.waktu instead of getSessionByIndex
             var obatMap = {}, bhpMap = {};
             dates.forEach(function (tgl) {
                 var dd = p.data[tgl] || { obat: [], bhp: [] };
-                dd.obat.forEach(function (o, idx) {
-                    var sesi = getSessionByIndex(idx);
-                    var key = o.nama + '_' + sesi;
-                    if (!obatMap[key]) obatMap[key] = { nama: o.nama, harga: o.harga, sesi: sesi, qtyPerDay: {} };
+                dd.obat.forEach(function (o) {
+                    var key = o.nama + '_' + o.waktu;
+                    if (!obatMap[key]) obatMap[key] = { nama: o.nama, harga: o.harga, sesi: o.waktu, qtyPerDay: {} };
                     obatMap[key].qtyPerDay[tgl] = o.qty;
                 });
-                dd.bhp.forEach(function (b, idx) {
-                    var sesi = getSessionByIndex(idx);
-                    var key = b.nama + '_' + sesi;
-                    if (!bhpMap[key]) bhpMap[key] = { nama: b.nama, harga: b.harga, sesi: sesi, qtyPerDay: {} };
+                dd.bhp.forEach(function (b) {
+                    var key = b.nama + '_' + b.waktu;
+                    if (!bhpMap[key]) bhpMap[key] = { nama: b.nama, harga: b.harga, sesi: b.waktu, qtyPerDay: {} };
                     bhpMap[key].qtyPerDay[tgl] = b.qty;
                 });
             });
@@ -961,33 +936,32 @@
 
             // Matrix table header with P|S|M sub-columns
             html += '<table class="table-cpor"><thead>';
-            html += '<tr class="bg-grey"><th class="col-no" rowspan="3">NO</th><th class="col-nama" rowspan="3">NAMA PERBEKALAN FARMASI</th><th colspan="' + (maxDays * 3) + '">TANGGAL RAWAT (QTY)</th><th class="col-sm" rowspan="3">RET</th><th class="col-sm" rowspan="3">JML</th><th class="col-price" rowspan="3">Harga Satuan</th><th class="col-price" rowspan="3">Total Harga</th></tr>';
+            html += '<tr class="bg-grey"><th class="col-no" rowspan="3">NO</th><th class="col-nama" rowspan="3">NAMA PERBEKALAN FARMASI</th><th colspan="' + (maxDays * 4) + '">TANGGAL RAWAT (QTY)</th><th class="col-sm" rowspan="3">RET</th><th class="col-sm" rowspan="3">JML</th><th class="col-price" rowspan="3">Harga Satuan</th><th class="col-price" rowspan="3">Total Harga</th></tr>';
             html += '<tr class="bg-grey text-center">';
             for (var d = 0; d < maxDays; d++) {
-                var label = (d < dates.length) ? formatTanggalPendek(dates[d]) : '';
-                html += '<td colspan="3" class="col-tgl">' + label + '</td>';
+                html += '<td colspan="4" class="col-tgl">' + formatTanggalPendek(dates[d]) + '</td>';
             }
             html += '</tr>';
             html += '<tr class="bg-grey text-center">';
             for (var d = 0; d < maxDays; d++) {
-                html += '<td class="col-sesi">P</td><td class="col-sesi">S</td><td class="col-sesi">M</td>';
+                html += '<td class="col-sesi">P</td><td class="col-sesi">S</td><td class="col-sesi">Sr</td><td class="col-sesi">M</td>';
             }
             html += '</tr></thead><tbody>';
 
             // OBAT section
-            html += '<tr class="bg-grey"><td colspan="' + (maxDays * 3 + 6) + '" class="text-left">OBAT</td></tr>';
+            html += '<tr class="bg-grey"><td colspan="' + (maxDays * 4 + 6) + '" class="text-left">OBAT</td></tr>';
             html += buildMatrixRows(obatRows, dates, maxDays, 1);
 
             // BHP section
-            html += '<tr class="bg-grey"><td colspan="' + (maxDays * 3 + 6) + '" class="text-left">ALKES / BHP</td></tr>';
+            html += '<tr class="bg-grey"><td colspan="' + (maxDays * 4 + 6) + '" class="text-left">ALKES / BHP</td></tr>';
             html += buildMatrixRows(bhpRows, dates, maxDays, obatRows.length + 1);
 
             html += '</tbody><tfoot><tr>';
             html += '<td colspan="2" rowspan="2" class="text-center" style="vertical-align:top;padding-top:10px;">Tanda Terima<br><br><br>( Pasien / Keluarga / Perawat )<br><small>*) Coret yang tidak perlu</small></td>';
-            for (var f = 1; f <= maxDays * 3; f++) html += '<td class="col-sesi"></td>';
+            for (var f = 1; f <= maxDays * 4; f++) html += '<td class="col-sesi"></td>';
             html += '<td colspan="3" class="bg-grey text-right">TOTAL BIAYA :</td>';
             html += '<td class="text-right font-weight-bold" style="font-size:11px;">' + formatRupiah(totalBiaya) + '</td>';
-            html += '</tr><tr><td colspan="' + (maxDays * 3) + '" class="text-center" style="font-size:8px;height:30px;">Catatan Pemberian Obat Rawat Inap</td><td colspan="4" class="bg-grey"></td></tr></tfoot>';
+            html += '</tr><tr><td colspan="' + (maxDays * 4) + '" class="text-center" style="font-size:8px;height:30px;">Catatan Pemberian Obat Rawat Inap</td><td colspan="4" class="bg-grey"></td></tr></tfoot>';
             html += '</table></div></body></html>';
 
             var w = window.open('', '_blank', 'width=1200,height=800');
@@ -1000,14 +974,9 @@
 
         function buildMatrixRows(items, dates, maxDays, startNo) {
             var html = '', no = startNo;
-            var sesiOrder = { PAGI: 0, SIANG: 1, MALAM: 2 };
+            var sesiOrder = { PAGI: 0, SIANG: 1, SORE: 2, MALAM: 3 };
             items.sort(function (a, b) { return (sesiOrder[a.sesi] || 99) - (sesiOrder[b.sesi] || 99); });
-            var lastSesi = null;
             items.forEach(function (item) {
-                if (lastSesi !== item.sesi) {
-                    html += '<tr class="bg-grey"><td colspan="' + (maxDays * 3 + 6) + '" class="text-left">SESI <strong>' + item.sesi + '</strong></td></tr>';
-                    lastSesi = item.sesi;
-                }
                 var jml = 0;
                 html += '<tr>';
                 html += '<td class="text-center">' + (no++) + '</td>';
@@ -1015,7 +984,7 @@
                 for (var d = 0; d < maxDays; d++) {
                     var qty = (d < dates.length) ? (item.qtyPerDay[dates[d]] || '') : '';
                     if (qty !== '') jml += qty;
-                    for (var s = 0; s < 3; s++) {
+                    for (var s = 0; s < 4; s++) {
                         if (s === sesiOrder[item.sesi]) {
                             html += '<td class="text-center">' + (qty !== '' ? qty : '') + '</td>';
                         } else {
