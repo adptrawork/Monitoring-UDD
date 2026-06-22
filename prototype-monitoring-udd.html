@@ -267,7 +267,10 @@
                                 <tr>
                                     <th style="width:30px;">No</th>
                                     <th>Daftar Obat</th>
-                                    <th style="width:50px;">Qty</th>
+                                    <th style="width:40px;">JML</th>
+                                    <th style="width:40px;">RET</th>
+                                    <th style="width:70px;">Harga Satuan</th>
+                                    <th style="width:80px;">Total Harga</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -287,11 +290,40 @@
                                 <tr>
                                     <th style="width:30px;">No</th>
                                     <th>Daftar BHP / Alkes</th>
-                                    <th style="width:50px;">Qty</th>
+                                    <th style="width:40px;">JML</th>
+                                    <th style="width:40px;">RET</th>
+                                    <th style="width:70px;">Harga Satuan</th>
+                                    <th style="width:80px;">Total Harga</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
+
+                        <!-- Summary biaya -->
+                        <div class="well well-sm" style="margin-top:10px; background:#f9f9f9;">
+                            <table class="table table-condensed" style="margin:0; font-size:13px;">
+                                <tr>
+                                    <td style="width:60%; border:none;"><strong>Subtotal Obat</strong></td>
+                                    <td style="width:40%; border:none; text-align:right;" id="total-obat">Rp 0</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:none;"><strong>Subtotal BHP / Alkes</strong></td>
+                                    <td style="border:none; text-align:right;" id="total-bhp">Rp 0</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:none;"><strong>Grand Total</strong></td>
+                                    <td style="border:none; text-align:right;" id="total-grand">Rp 0</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:none;"><strong>Jasa Pelayanan</strong></td>
+                                    <td style="border:none; text-align:right;" id="total-jasa">Rp 0</td>
+                                </tr>
+                                <tr style="border-top:2px solid #337ab7;">
+                                    <td style="border:none;"><strong>Total Keseluruhan</strong></td>
+                                    <td style="border:none; text-align:right; font-size:15px; font-weight:bold; color:#c00;" id="total-keseluruhan">Rp 0</td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -823,29 +855,52 @@
             var sesiOrder = ['PAGI', 'SIANG', 'SORE', 'MALAM'];
 
             function buildTableHtml(items) {
-                // Group items by waktu
                 var groups = {};
                 items.forEach(function (item) {
                     var s = item.waktu;
                     if (!groups[s]) groups[s] = [];
                     groups[s].push(item);
                 });
-                // Build HTML with session headers + data rows
                 var html = '';
                 var no = 1;
+                var totalBiaya = 0;
                 sesiOrder.forEach(function (s) {
-                    html += '<tr class="row-sesi"><td colspan="3"><strong>' + s + '</strong></td></tr>';
+                    html += '<tr class="row-sesi"><td colspan="6"><strong>' + s + '</strong></td></tr>';
                     (groups[s] || []).forEach(function (item) {
-                        html += '<tr><td class="text-center">' + (no++) + '</td>';
+                        var ret = item.ret || 0;
+                        var jml = item.qty - ret;
+                        var hargaSatuan = parseInt(item.harga.replace(/\./g, ''), 10);
+                        var total = jml * hargaSatuan;
+                        totalBiaya += total;
+                        html += '<tr>';
+                        html += '<td class="text-center">' + (no++) + '</td>';
                         html += '<td>' + item.nama + '</td>';
-                        html += '<td class="text-center">' + item.qty + '</td></tr>';
+                        html += '<td class="text-center">' + jml + '</td>';
+                        html += '<td class="text-center">' + ret + '</td>';
+                        html += '<td class="text-right">' + formatRupiah(hargaSatuan) + '</td>';
+                        html += '<td class="text-right">' + formatRupiah(total) + '</td>';
+                        html += '</tr>';
                     });
                 });
-                return html;
+                return { html: html, total: totalBiaya };
             }
 
-            tabelObat.find('tbody').html(buildTableHtml(pdata.obat));
-            tabelBhp.find('tbody').html(buildTableHtml(pdata.bhp));
+            var obatResult = buildTableHtml(pdata.obat);
+            var bhpResult = buildTableHtml(pdata.bhp);
+
+            tabelObat.find('tbody').html(obatResult.html);
+            tabelBhp.find('tbody').html(bhpResult.html);
+
+            var grandObat = obatResult.total;
+            var grandBhp = bhpResult.total;
+            var grandTotal = grandObat + grandBhp;
+            var jasaPelayanan = (Math.floor(Math.random() * 10) + 1) * 5000;
+
+            $('#total-obat').text('Rp ' + formatRupiah(grandObat));
+            $('#total-bhp').text('Rp ' + formatRupiah(grandBhp));
+            $('#total-grand').text('Rp ' + formatRupiah(grandTotal));
+            $('#total-jasa').text('Rp ' + formatRupiah(jasaPelayanan));
+            $('#total-keseluruhan').text('Rp ' + formatRupiah(grandTotal + jasaPelayanan));
         }
 
         // ======================================================================
@@ -956,12 +1011,27 @@
             html += '<tr class="bg-grey"><td colspan="' + (maxDays * 4 + 6) + '" class="text-left">ALKES / BHP</td></tr>';
             html += buildMatrixRows(bhpRows, dates, maxDays, obatRows.length + 1);
 
+            var jasaPelayanan = (Math.floor(Math.random() * 10) + 1) * 5000;
+            var totalKeseluruhan = totalBiaya + jasaPelayanan;
+
             html += '</tbody><tfoot><tr>';
-            html += '<td colspan="2" rowspan="2" class="text-center" style="vertical-align:top;padding-top:10px;">Tanda Terima<br><br><br>( Pasien / Keluarga / Perawat )<br><small>*) Coret yang tidak perlu</small></td>';
+            html += '<td colspan="2" rowspan="2" class="text-center" style="vertical-align:middle;padding:10px 4px;">Tanda Terima<br><br>( Pasien / Keluarga / Perawat )<br><small>*) Coret yang tidak perlu</small></td>';
             for (var f = 1; f <= maxDays * 4; f++) html += '<td class="col-sesi"></td>';
-            html += '<td colspan="3" class="bg-grey text-right">TOTAL BIAYA :</td>';
-            html += '<td class="text-right font-weight-bold" style="font-size:11px;">' + formatRupiah(totalBiaya) + '</td>';
-            html += '</tr><tr><td colspan="' + (maxDays * 4) + '" class="text-center" style="font-size:8px;height:30px;">Catatan Pemberian Obat Rawat Inap</td><td colspan="4" class="bg-grey"></td></tr></tfoot>';
+            html += '<td colspan="4" class="bg-grey" style="padding:6px 10px;">';
+            html += '<div style="display:flex; justify-content:space-between; align-items:flex-start;">';
+            html += '<div style="text-align:left;">';
+            html += 'TOTAL BIAYA OBAT & BHP<br>';
+            html += 'JASA PELAYANAN<br>';
+            html += '<strong>TOTAL KESELURUHAN</strong>';
+            html += '</div>';
+            html += '<div style="text-align:right; font-size:11px;">';
+            html += '<span style="display:inline-block; min-width:100px; text-align:right;">' + formatRupiah(totalBiaya) + '</span><br>';
+            html += '<span style="display:inline-block; min-width:100px; text-align:right;">' + formatRupiah(jasaPelayanan) + '</span><br>';
+            html += '<strong><span style="display:inline-block; min-width:100px; text-align:right;">' + formatRupiah(totalKeseluruhan) + '</span></strong>';
+            html += '</div>';
+            html += '</div>';
+            html += '</td>';
+            html += '</tr><tr><td colspan="' + (maxDays * 4 + 4) + '" class="text-center" style="font-size:8px;height:30px;">Catatan Pemberian Obat</td></tr></tfoot>';
             html += '</table></div></body></html>';
 
             var w = window.open('', '_blank', 'width=1200,height=800');
