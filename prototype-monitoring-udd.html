@@ -128,6 +128,7 @@
         #tabel-bhp td {
             font-size: 13px;
             vertical-align: middle;
+            white-space: nowrap;
         }
 
         /* Patient info */
@@ -267,7 +268,11 @@
                                 <tr>
                                     <th style="width:30px;">No</th>
                                     <th>Daftar Obat</th>
-                                    <th style="width:40px;">JML</th>
+                                    <th style="width:28px;">P</th>
+                                    <th style="width:28px;">S</th>
+                                    <th style="width:28px;">Sr</th>
+                                    <th style="width:28px;">M</th>
+                                    <th style="width:40px;">JML Total</th>
                                     <th style="width:40px;">RET</th>
                                     <th style="width:70px;">Harga Satuan</th>
                                     <th style="width:80px;">Total Harga</th>
@@ -290,7 +295,11 @@
                                 <tr>
                                     <th style="width:30px;">No</th>
                                     <th>Daftar BHP / Alkes</th>
-                                    <th style="width:40px;">JML</th>
+                                    <th style="width:28px;">P</th>
+                                    <th style="width:28px;">S</th>
+                                    <th style="width:28px;">Sr</th>
+                                    <th style="width:28px;">M</th>
+                                    <th style="width:40px;">JML Total</th>
                                     <th style="width:40px;">RET</th>
                                     <th style="width:70px;">Harga Satuan</th>
                                     <th style="width:80px;">Total Harga</th>
@@ -831,9 +840,15 @@
             // Compute date range dynamically
             var dateRange = getDateRange(patient);
 
-            // Build date table — show ALL dates in range
+            // Filter to only dates that have data (obat or bhp items)
+            var availableDates = dateRange.filter(function (dateKey) {
+                var dd = patient.data[dateKey];
+                return dd && (dd.obat.length > 0 || dd.bhp.length > 0);
+            });
+
+            // Build date table — show only dates with data
             var tbodyHtml = '';
-            dateRange.forEach(function (dateKey, idx) {
+            availableDates.forEach(function (dateKey, idx) {
                 var formatted = formatTanggal(dateKey);
                 var activeClass = idx === 0 ? ' class="active"' : '';
                 tbodyHtml += '<tr data-tanggal="' + dateKey + '"' + activeClass + '>';
@@ -842,11 +857,13 @@
             });
             $('#tabel-tanggal tbody').html(tbodyHtml);
 
-            // Load first date data
-            var firstDate = dateRange[0];
-            loadDataForTanggal(firstDate);
-            var formatted = formatTanggal(firstDate);
-            $('#label-tanggal-obat, #label-tanggal-bhp').text(formatted);
+            // Load first available date data
+            var firstDate = availableDates[0];
+            if (firstDate) {
+                loadDataForTanggal(firstDate);
+                var formatted = formatTanggal(firstDate);
+                $('#label-tanggal-obat, #label-tanggal-bhp').text(formatted);
+            }
         }
 
         // Load data for a specific date — direct HTML, always shows 4 session headers
@@ -855,32 +872,37 @@
             var sesiOrder = ['PAGI', 'SIANG', 'SORE', 'MALAM'];
 
             function buildTableHtml(items) {
-                var groups = {};
+                var map = {};
                 items.forEach(function (item) {
-                    var s = item.waktu;
-                    if (!groups[s]) groups[s] = [];
-                    groups[s].push(item);
+                    if (!map[item.nama]) map[item.nama] = { nama: item.nama, harga: item.harga, ret: item.ret || 0, qtyPerSesi: {} };
+                    map[item.nama].qtyPerSesi[item.waktu] = (map[item.nama].qtyPerSesi[item.waktu] || 0) + item.qty;
                 });
+                var grouped = Object.values(map);
                 var html = '';
                 var no = 1;
                 var totalBiaya = 0;
-                sesiOrder.forEach(function (s) {
-                    html += '<tr class="row-sesi"><td colspan="6"><strong>' + s + '</strong></td></tr>';
-                    (groups[s] || []).forEach(function (item) {
-                        var ret = item.ret || 0;
-                        var jml = item.qty - ret;
-                        var hargaSatuan = parseInt(item.harga.replace(/\./g, ''), 10);
-                        var total = jml * hargaSatuan;
-                        totalBiaya += total;
-                        html += '<tr>';
-                        html += '<td class="text-center">' + (no++) + '</td>';
-                        html += '<td>' + item.nama + '</td>';
-                        html += '<td class="text-center">' + jml + '</td>';
-                        html += '<td class="text-center">' + ret + '</td>';
-                        html += '<td class="text-right">' + formatRupiah(hargaSatuan) + '</td>';
-                        html += '<td class="text-right">' + formatRupiah(total) + '</td>';
-                        html += '</tr>';
-                    });
+                grouped.forEach(function (item) {
+                    var ret = item.ret;
+                    var qtyP = item.qtyPerSesi['PAGI'] || 0;
+                    var qtyS = item.qtyPerSesi['SIANG'] || 0;
+                    var qtySr = item.qtyPerSesi['SORE'] || 0;
+                    var qtyM = item.qtyPerSesi['MALAM'] || 0;
+                    var jml = qtyP + qtyS + qtySr + qtyM;
+                    var hargaSatuan = parseInt(item.harga.replace(/\./g, ''), 10);
+                    var total = jml * hargaSatuan;
+                    totalBiaya += total;
+                    html += '<tr>';
+                    html += '<td class="text-center">' + (no++) + '</td>';
+                    html += '<td>' + item.nama + '</td>';
+                    html += '<td class="text-center">' + (qtyP || '') + '</td>';
+                    html += '<td class="text-center">' + (qtyS || '') + '</td>';
+                    html += '<td class="text-center">' + (qtySr || '') + '</td>';
+                    html += '<td class="text-center">' + (qtyM || '') + '</td>';
+                    html += '<td class="text-center">' + jml + '</td>';
+                    html += '<td class="text-center">' + ret + '</td>';
+                    html += '<td class="text-right">' + formatRupiah(hargaSatuan) + '</td>';
+                    html += '<td class="text-right">' + formatRupiah(total) + '</td>';
+                    html += '</tr>';
                 });
                 return { html: html, total: totalBiaya };
             }
@@ -960,19 +982,19 @@
             html += '<td class="text-left" style="width:28%;">Dokter : <br>' + p.dokter.split('<br>').map(function (d, i) { return (i + 1) + '. <span class="header-val">' + d.trim() + '</span>'; }).join('<br>') + '</td>';
             html += '</tr></table>';
 
-            // Build matrix data — use item.waktu instead of getSessionByIndex
+            // Build matrix data — group by DRUG name only (not nama+session)
             var obatMap = {}, bhpMap = {};
             dates.forEach(function (tgl) {
                 var dd = p.data[tgl] || { obat: [], bhp: [] };
                 dd.obat.forEach(function (o) {
-                    var key = o.nama + '_' + o.waktu;
-                    if (!obatMap[key]) obatMap[key] = { nama: o.nama, harga: o.harga, sesi: o.waktu, qtyPerDay: {} };
-                    obatMap[key].qtyPerDay[tgl] = o.qty;
+                    if (!obatMap[o.nama]) obatMap[o.nama] = { nama: o.nama, harga: o.harga, qtyPerDay: {} };
+                    if (!obatMap[o.nama].qtyPerDay[tgl]) obatMap[o.nama].qtyPerDay[tgl] = {};
+                    obatMap[o.nama].qtyPerDay[tgl][o.waktu] = o.qty;
                 });
                 dd.bhp.forEach(function (b) {
-                    var key = b.nama + '_' + b.waktu;
-                    if (!bhpMap[key]) bhpMap[key] = { nama: b.nama, harga: b.harga, sesi: b.waktu, qtyPerDay: {} };
-                    bhpMap[key].qtyPerDay[tgl] = b.qty;
+                    if (!bhpMap[b.nama]) bhpMap[b.nama] = { nama: b.nama, harga: b.harga, qtyPerDay: {} };
+                    if (!bhpMap[b.nama].qtyPerDay[tgl]) bhpMap[b.nama].qtyPerDay[tgl] = {};
+                    bhpMap[b.nama].qtyPerDay[tgl][b.waktu] = b.qty;
                 });
             });
             var obatRows = Object.values(obatMap);
@@ -982,7 +1004,10 @@
                 var total = 0;
                 items.forEach(function (item) {
                     var jml = 0;
-                    dates.forEach(function (tgl) { jml += (item.qtyPerDay[tgl] || 0); });
+                    dates.forEach(function (tgl) {
+                        var dayQtys = item.qtyPerDay[tgl] || {};
+                        jml += (dayQtys['PAGI'] || 0) + (dayQtys['SIANG'] || 0) + (dayQtys['SORE'] || 0) + (dayQtys['MALAM'] || 0);
+                    });
                     total += jml * parseInt(item.harga.replace(/\./g, ''), 10);
                 });
                 return total;
@@ -1044,23 +1069,22 @@
 
         function buildMatrixRows(items, dates, maxDays, startNo) {
             var html = '', no = startNo;
-            var sesiOrder = { PAGI: 0, SIANG: 1, SORE: 2, MALAM: 3 };
-            items.sort(function (a, b) { return (sesiOrder[a.sesi] || 99) - (sesiOrder[b.sesi] || 99); });
             items.forEach(function (item) {
                 var jml = 0;
                 html += '<tr>';
                 html += '<td class="text-center">' + (no++) + '</td>';
                 html += '<td class="text-left">' + item.nama + '</td>';
                 for (var d = 0; d < maxDays; d++) {
-                    var qty = (d < dates.length) ? (item.qtyPerDay[dates[d]] || '') : '';
-                    if (qty !== '') jml += qty;
-                    for (var s = 0; s < 4; s++) {
-                        if (s === sesiOrder[item.sesi]) {
-                            html += '<td class="text-center">' + (qty !== '' ? qty : '') + '</td>';
-                        } else {
-                            html += '<td class="text-center"></td>';
-                        }
-                    }
+                    var dayQtys = item.qtyPerDay[dates[d]] || {};
+                    var pagi = dayQtys['PAGI'] || '';
+                    var siang = dayQtys['SIANG'] || '';
+                    var sore = dayQtys['SORE'] || '';
+                    var malam = dayQtys['MALAM'] || '';
+                    jml += (pagi || 0) + (siang || 0) + (sore || 0) + (malam || 0);
+                    html += '<td class="text-center">' + pagi + '</td>';
+                    html += '<td class="text-center">' + siang + '</td>';
+                    html += '<td class="text-center">' + sore + '</td>';
+                    html += '<td class="text-center">' + malam + '</td>';
                 }
                 html += '<td class="text-center">0</td>';
                 html += '<td class="text-center">' + jml + '</td>';
