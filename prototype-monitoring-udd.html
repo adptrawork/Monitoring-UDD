@@ -107,6 +107,11 @@
             background-color: #c4e3f3 !important;
         }
 
+        .cb-cpor {
+            margin: 0;
+            vertical-align: middle;
+        }
+
         .btn-detail {
             padding: 2px 10px;
             font-size: 12px;
@@ -244,6 +249,7 @@
                         <table class="table table-hover" id="tabel-tanggal">
                             <thead>
                                 <tr>
+                                    <th style="width:28px;"><input type="checkbox" id="check-all-cpor" checked></th>
                                     <th style="width:55px;">Aksi</th>
                                     <th>Tanggal</th>
                                 </tr>
@@ -852,6 +858,7 @@
                 var formatted = formatTanggal(dateKey);
                 var activeClass = idx === 0 ? ' class="active"' : '';
                 tbodyHtml += '<tr data-tanggal="' + dateKey + '"' + activeClass + '>';
+                tbodyHtml += '<td class="text-center"><input type="checkbox" class="cb-cpor" checked></td>';
                 tbodyHtml += '<td><button class="btn btn-info btn-xs btn-detail">Detail</button></td>';
                 tbodyHtml += '<td>' + formatted + '</td></tr>';
             });
@@ -929,6 +936,16 @@
         // EVENT HANDLERS
         // ======================================================================
 
+        // Check-all toggle untuk CPOR
+        $('#check-all-cpor').on('change', function () {
+            $('.cb-cpor').prop('checked', $(this).prop('checked'));
+        });
+
+        // Cegah klik checkbox memicu event baris
+        $('#tabel-tanggal').on('click', '.cb-cpor', function (e) {
+            e.stopPropagation();
+        });
+
         // Klik Detail pada tabel tanggal
         $('#tabel-tanggal').on('click', '.btn-detail', function () {
             var row = $(this).closest('tr');
@@ -946,7 +963,17 @@
         // ======================================================================
         function cetakCPOR() {
             var p = selectedPatient;
-            var dates = getDateRange(p);
+            // Baca tanggal yang dicentang
+            var dates = [];
+            $('#tabel-tanggal tbody tr').each(function () {
+                if ($(this).find('.cb-cpor').is(':checked'))
+                    dates.push($(this).data('tanggal'));
+            });
+            dates.sort();
+            if (dates.length === 0) {
+                alert('Pilih minimal satu tanggal untuk cetak CPOR.');
+                return;
+            }
             var maxDays = dates.length;
 
             var html = '';
